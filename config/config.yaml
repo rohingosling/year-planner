@@ -1,0 +1,125 @@
+# Year Planner Generator Configuration
+# Version: v1.2
+
+# Debug mode settings
+
+debug:
+  enabled:             false  # Enable debug visualization (red borders, blue gutter lines)
+  config_info_overlay: false  # Enable configuration info overlay on each page
+
+# Configuration info overlay settings
+
+config_info_overlay:
+  bottom:          1.8            # Distance from bottom edge of page in cm
+  right:           1.2            # Distance from right edge (recto pages) in cm
+  left:            1.2            # Distance from left edge (verso pages) in cm
+  width:           6.0            # Text box width in cm
+  title:           "Config Info"  # Overlay title text
+  title_font_size: 8              # Title text font size in points
+  data_font_size:  6              # Field data font size in points
+
+# Document metadata
+
+document:
+  title:   "Year Planner"  # Document title for cover page
+  version: "1.2"           # Document version for cover page
+  year:    2026            # Planner year (current year)
+
+# Document generator metadata
+
+document_generator:
+  program: "Year Planner Generator"       # Program name shown in terminal header
+  version: "2.0"                          # Generator version number
+  release: "2026-01-27"                   # Release date
+  author:  "Rohin Gosling + Claude Code"  # Author name
+
+# Page layout (A4, measurements in centimeters)
+
+page:
+  width:                21.0   # Page width in cm (A4)
+  height:               29.7   # Page height in cm (A4)
+  margin_top:           0.6    # Top margin in cm
+  margin_bottom:        1.2    # Bottom margin in cm
+  margin_left:          0.6    # Left (outside) margin in cm
+  margin_right:         0.6    # Right (outside) margin in cm
+  gutter_size:          1.5    # Binding gutter size in cm
+  page_number_position: 0.55   # Footer distance from bottom in cm
+
+# Table styling
+
+table:
+  border:
+    thickness: 0.75   # Border line thickness in points
+    grayscale: 75  # Border color (0=white, 100=black)
+
+  title_row:
+    height:               14.2  # Row height in points
+    background_grayscale: 75    # Background color (0=white, 100=black)
+    font_size:            10    # Font size in points
+    font_grayscale:       0     # Font color (0=white, 100=black)
+
+  header_row:
+    height:               14.2  # Row height in points
+    background_grayscale: 25    # Background color (~BFBFBF gray)
+    font_size:            10    # Font size in points
+    font_grayscale:       100   # Font color (0=white, 100=black)
+
+  content_row:
+    font_size:      11    # Font size in points
+    font_grayscale: 50    # Font color (0=white, 100=black)
+    font_italic:    true  # Content row text is italic
+
+# Cover page settings
+
+cover:
+  contact_fields:              # Fields shown on inside cover
+    - "Name"
+    - "Phone"
+    - "Email"    
+  contact_table:
+    row_height:      1.0   # Row height in cm
+    label_width:     2.0   # Label column width in cm
+    value_width:     12.0  # Value column width in cm
+    label_grayscale: 5     # Label column shading (0=white, 100=black)
+
+# Section configurations
+
+toc:
+  rows_per_page:        40  # Content rows per TOC page
+  section_grayscale:    15  # Level 1: Section headers (Goals, Backlog, etc.)
+  first_item_grayscale: 5   # Level 2: First item markers (first week, first day of week)
+
+calendar:
+  day_row_height: 15.5  # Vertical spacing between day rows in points
+  month_name_gap: 6     # Space between month name and days grid in points
+
+goals:
+  columns: 2  # Number of columns in goals table
+  rows:    4  # Number of rows in goals table
+
+backlog:
+  page_count: 4   # Number of backlog pages
+  row_count:  24  # Rows per backlog table
+
+week_planner:
+  rows_per_page:         14  # Content rows per week planner table
+  first_week_grayscale:  5   # First week of month row shading (0=white, 100=black)
+
+daily_spread:
+  rows:                  8   # Content rows per day table
+  subject_width_percent: 25  # Subject column width as percentage
+  table_gap:             0.2 # Vertical gap between day tables in cm
+
+terms_definitions:
+  page_count:          4   # Number of terms and definitions pages
+  row_count:           16  # Content rows per page
+  term_width_percent:  25  # Term/Abbreviation column width as percentage
+
+graph_paper:
+  page_count:           12   # Number of graph paper pages
+  columns:              37   # Grid columns
+  rows:                 56   # Grid rows
+  grid_color_percent:   15   # Grid line color (0=white, 100=black)
+  border_color_percent: 50   # Border color (0=white, 100=black)
+
+

@@ -1,0 +1,31 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Generated planner documents
+output/*.docx
+output/*.pdf
+output/*.bak
+
+# PyInstaller build artifacts (the standalone exe ships as a separate
+# release asset, not committed to the repo)
+build/
+dist/
+
+# Runtime-generated graph-paper grids (the pre-generated bundled grid
+# stays tracked and is shipped with the source)
+assets/images/graph_paper_*.png
+!assets/images/graph_paper_37x56_15_50_2161x3295px.png
+
+# IDE / editor
+.idea/
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db
