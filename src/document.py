@@ -377,6 +377,7 @@ def _add_debug_shapes_to_header (
     # Convert cm to inches for VML (1 inch = 2.54 cm).
 
     def cm_to_in ( cm ):
+
         return cm / 2.54
 
     # Red rectangle dimensions.
@@ -965,6 +966,7 @@ def _add_config_textbox_to_body (
     # Escape XML special characters in text.
 
     def escape_xml ( text: str ) -> str:
+
         return text.replace ( '&', '&amp;' ).replace ( '<', '&lt;' ).replace ( '>', '&gt;' )
 
     # Create a run element with optional bold formatting and specified size.

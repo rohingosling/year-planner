@@ -56,8 +56,9 @@ DAY_NAMES = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 @dataclass
 class TOCEntry:
-    label: str
-    page_number: int
+
+    label:         str
+    page_number:   int
     shading_level: int = 0
 
 

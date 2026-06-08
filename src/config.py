@@ -33,9 +33,10 @@ import yaml
 
 @dataclass
 class DocumentConfig:
-    title: str
+
+    title:   str
     version: str
-    year: int
+    year:    int
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -59,13 +60,14 @@ class DocumentConfig:
 
 @dataclass
 class PageConfig:
-    width: float
-    height: float
-    margin_top: float
-    margin_bottom: float
-    margin_left: float
-    margin_right: float
-    gutter_size: float
+
+    width:                float
+    height:               float
+    margin_top:           float
+    margin_bottom:        float
+    margin_left:          float
+    margin_right:         float
+    gutter_size:          float
     page_number_position: float
 
 
@@ -84,6 +86,7 @@ class PageConfig:
 
 @dataclass
 class BorderConfig:
+
     thickness: float
     grayscale: int
 
@@ -105,10 +108,11 @@ class BorderConfig:
 
 @dataclass
 class TitleRowConfig:
-    height: float
+
+    height:               float
     background_grayscale: int
-    font_size: float
-    font_grayscale: int
+    font_size:            float
+    font_grayscale:       int
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -128,10 +132,11 @@ class TitleRowConfig:
 
 @dataclass
 class HeaderRowConfig:
-    height: float
+
+    height:               float
     background_grayscale: int
-    font_size: float
-    font_grayscale: int
+    font_size:            float
+    font_grayscale:       int
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -150,9 +155,10 @@ class HeaderRowConfig:
 
 @dataclass
 class ContentRowConfig:
-    font_size: float
+
+    font_size:      float
     font_grayscale: int
-    font_italic: bool
+    font_italic:    bool
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -172,9 +178,10 @@ class ContentRowConfig:
 
 @dataclass
 class TableConfig:
-    border: BorderConfig
-    title_row: TitleRowConfig
-    header_row: HeaderRowConfig
+
+    border:      BorderConfig
+    title_row:   TitleRowConfig
+    header_row:  HeaderRowConfig
     content_row: ContentRowConfig
 
 
@@ -193,7 +200,8 @@ class TableConfig:
 
 @dataclass
 class DebugConfig:
-    enabled: bool
+
+    enabled:             bool
     config_info_overlay: bool
 
 
@@ -218,13 +226,13 @@ class DebugConfig:
 @dataclass
 class ConfigInfoOverlayConfig:
 
-    bottom: float
-    right: float
-    left: float
-    width: float
-    title: str
+    bottom:          float
+    right:           float
+    left:            float
+    width:           float
+    title:           str
     title_font_size: float
-    data_font_size: float
+    data_font_size:  float
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -244,7 +252,7 @@ class ConfigInfoOverlayConfig:
 @dataclass
 class ContactTableConfig:
 
-    row_height: float
+    row_height:  float
     label_width: float
     value_width: float
 
@@ -266,7 +274,7 @@ class ContactTableConfig:
 class CoverConfig:
 
     contact_fields: list [ str ]
-    contact_table: ContactTableConfig
+    contact_table:  ContactTableConfig
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -290,13 +298,13 @@ class CoverConfig:
 @dataclass
 class Config:
 
-    debug: DebugConfig
+    debug:               DebugConfig
     config_info_overlay: ConfigInfoOverlayConfig
-    document: DocumentConfig
-    page: PageConfig
-    table: TableConfig
-    cover: CoverConfig
-    raw: dict [ str, Any ]
+    document:            DocumentConfig
+    page:                PageConfig
+    table:               TableConfig
+    cover:               CoverConfig
+    raw:                 dict [ str, Any ]
 
 
 #-----------------------------------------------------------------------------------------------------------------------
