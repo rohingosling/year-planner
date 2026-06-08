@@ -10,19 +10,18 @@
 #   overlay.
 #-----------------------------------------------------------------------------------------------------------------------
 
-from docx import Document
-from docx.oxml import parse_xml
+from docx         import Document
+from docx.oxml    import parse_xml
 from docx.oxml.ns import nsmap
-from docx.shared import Cm, Pt
+from docx.shared  import Cm, Pt
 
-from src.config import Config
+from src.config   import Config
 from src.document import add_page_break, add_config_info_overlay, get_content_width, get_content_height
-from src.paths import resource_path
-
+from src.paths    import resource_path
 
 # Global constants.
 
-IMAGE_DIR  = resource_path("assets", "images")  # Bundled image directory (source root or frozen bundle).
+IMAGE_DIR  = resource_path ( "assets", "images" )  # Bundled image directory (source root or frozen bundle).
 EMU_PER_CM = 914400 / 2.54                      # EMU conversion constant (914400 EMUs per inch, 1 inch = 2.54 cm).
 
 
@@ -45,14 +44,14 @@ EMU_PER_CM = 914400 / 2.54                      # EMU conversion constant (91440
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def generate_instructions_page(document: Document, config: Config) -> None:
+def generate_instructions_page ( document: Document, config: Config ) -> None:
 
     # Generate the instructions page.
 
     # Get content area dimensions.
 
-    content_width_cm = get_content_width(config, include_gutter=True)
-    content_height_cm = get_content_height(config)
+    content_width_cm  = get_content_width ( config, include_gutter = True )
+    content_height_cm = get_content_height ( config )
 
     # Build image path.
 
@@ -60,33 +59,33 @@ def generate_instructions_page(document: Document, config: Config) -> None:
 
     # Insert image filling content area.
 
-    document.add_picture(
-        str(image_path),
-        width=Cm(content_width_cm),
-        height=Cm(content_height_cm)
+    document.add_picture (
+        str ( image_path ),
+        width  = Cm ( content_width_cm ),
+        height = Cm ( content_height_cm )
     )
 
     # Remove spacing from picture paragraph.
 
-    picture_para = document.paragraphs[-1]
-    picture_para.paragraph_format.space_before = Pt(0)
-    picture_para.paragraph_format.space_after = Pt(0)
+    picture_para                               = document.paragraphs [ -1 ]
+    picture_para.paragraph_format.space_before = Pt ( 0 )
+    picture_para.paragraph_format.space_after  = Pt ( 0 )
 
     # Add title overlay (floating text box, transparent background).
 
-    _add_title_overlay(picture_para, config, "Instructions")
+    _add_title_overlay ( picture_para, config, "Instructions" )
 
     # Add config info overlay (recto) - anchor to picture paragraph since page is full.
 
-    add_config_info_overlay(document, config, is_recto=True, anchor_paragraph=picture_para)
+    add_config_info_overlay ( document, config, is_recto = True, anchor_paragraph = picture_para )
 
     # Add blank verso page.
     # Note: The page break paragraph is on the CURRENT page (recto), not the blank page.
     # Do NOT anchor the verso overlay to page_break_para - it would appear on the recto.
     # Instead, let add_config_info_overlay create its own minimal paragraph on the verso.
 
-    add_page_break(document, minimize_height=True)
-    add_config_info_overlay(document, config, is_recto=False)
+    add_page_break ( document, minimize_height = True )
+    add_config_info_overlay ( document, config, is_recto = False )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -112,7 +111,7 @@ def generate_instructions_page(document: Document, config: Config) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _add_title_overlay(paragraph, config: Config, title_text: str) -> None:
+def _add_title_overlay ( paragraph, config: Config, title_text: str ) -> None:
 
     # Add a floating title text box overlay on top of the image.
 
@@ -120,22 +119,22 @@ def _add_title_overlay(paragraph, config: Config, title_text: str) -> None:
 
     # Title dimensions and position.
 
-    title_width_cm = 10.0  # Width of title text box.
+    title_width_cm  = 10.0  # Width of title text box.
     title_height_cm = 1.2  # Height to accommodate 18pt text.
 
     # Calculate center position.
 
-    page_width_cm = config.page.width
-    margin_top_cm = config.page.margin_top
+    page_width_cm  = config.page.width
+    margin_top_cm  = config.page.margin_top
     margin_left_cm = config.page.margin_left
-    gutter_cm = config.page.gutter_size
+    gutter_cm      = config.page.gutter_size
 
     # X position: center of content area (accounting for gutter on recto).
     # Content starts at margin_left + gutter, width is page - margins - gutter.
 
     content_start_x = margin_left_cm + gutter_cm
-    content_width = page_width_cm - margin_left_cm - config.page.margin_right - gutter_cm
-    center_x_cm = content_start_x + (content_width - title_width_cm) / 2
+    content_width   = page_width_cm - margin_left_cm - config.page.margin_right - gutter_cm
+    center_x_cm     = content_start_x + ( content_width - title_width_cm ) / 2
 
     # Y position: at top margin.
 
@@ -143,10 +142,10 @@ def _add_title_overlay(paragraph, config: Config, title_text: str) -> None:
 
     # Convert to EMUs.
 
-    x_emu = int(center_x_cm * EMU_PER_CM)
-    y_emu = int(y_cm * EMU_PER_CM)
-    width_emu = int(title_width_cm * EMU_PER_CM)
-    height_emu = int(title_height_cm * EMU_PER_CM)
+    x_emu      = int ( center_x_cm * EMU_PER_CM )
+    y_emu      = int ( y_cm * EMU_PER_CM )
+    width_emu  = int ( title_width_cm * EMU_PER_CM )
+    height_emu = int ( title_height_cm * EMU_PER_CM )
 
     # Font size in half-points (18pt = 36 half-points).
 
@@ -154,7 +153,7 @@ def _add_title_overlay(paragraph, config: Config, title_text: str) -> None:
 
     # Unique ID for this text box.
 
-    doc_pr_id = random.randint(10000, 99999)
+    doc_pr_id = random.randint ( 10000, 99999 )
 
     # Build DrawingML XML - using pattern from document.py with transparent fill.
 
@@ -194,10 +193,10 @@ def _add_title_overlay(paragraph, config: Config, title_text: str) -> None:
 
     # Parse and add to paragraph.
 
-    drawing = parse_xml(textbox_xml)
+    drawing = parse_xml ( textbox_xml )
 
     # Add a run to the paragraph and append the drawing.
 
-    run = paragraph.add_run()
-    run.font.size = Pt(1)  # Minimal size for the run itself.
-    run._r.append(drawing)
+    run           = paragraph.add_run ()
+    run.font.size = Pt ( 1 )  # Minimal size for the run itself.
+    run._r.append ( drawing )

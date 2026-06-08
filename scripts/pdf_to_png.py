@@ -42,44 +42,44 @@ import fitz  # PyMuPDF
 #   ValueError        : If the PDF has no pages.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def pdf_to_png(pdf_path: str, output_path: str, dpi: int = 300) -> None:
+def pdf_to_png ( pdf_path: str, output_path: str, dpi: int = 300 ) -> None:
 
     # Convert a single-page PDF to a high-resolution PNG.
 
-    pdf_file = Path(pdf_path)
-    if not pdf_file.exists():
-        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+    pdf_file = Path ( pdf_path )
+    if not pdf_file.exists ():
+        raise FileNotFoundError ( f"PDF file not found: {pdf_path}" )
 
-    doc = fitz.open(pdf_path)
+    doc = fitz.open ( pdf_path )
 
-    if len(doc) == 0:
-        doc.close()
-        raise ValueError(f"PDF has no pages: {pdf_path}")
+    if len ( doc ) == 0:
+        doc.close ()
+        raise ValueError ( f"PDF has no pages: {pdf_path}" )
 
     # Get the first page.
 
-    page = doc[0]
+    page = doc [ 0 ]
 
     # Scale factor for desired DPI (default PDF resolution is 72 DPI).
 
-    scale = dpi / 72
-    matrix = fitz.Matrix(scale, scale)
+    scale  = dpi / 72
+    matrix = fitz.Matrix ( scale, scale )
 
     # Render page to pixmap.
 
-    pix = page.get_pixmap(matrix=matrix)
+    pix = page.get_pixmap ( matrix = matrix )
 
     # Save as PNG.
 
-    output_file = Path(output_path)
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    pix.save(str(output_file))
+    output_file = Path ( output_path )
+    output_file.parent.mkdir ( parents = True, exist_ok = True )
+    pix.save ( str ( output_file ) )
 
-    doc.close()
+    doc.close ()
 
-    print(f"Converted: {pdf_path}")
-    print(f"Output:    {output_path}")
-    print(f"Size:      {pix.width} x {pix.height} pixels ({dpi} DPI)")
+    print ( f"Converted: {pdf_path}" )
+    print ( f"Output:    {output_path}" )
+    print ( f"Size:      {pix.width} x {pix.height} pixels ({dpi} DPI)" )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -98,30 +98,30 @@ def pdf_to_png(pdf_path: str, output_path: str, dpi: int = 300) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def main() -> None:
+def main () -> None:
 
     # Command-line entry point.
 
-    parser = argparse.ArgumentParser(
-        description="Convert a single-page PDF to a high-resolution PNG image."
+    parser = argparse.ArgumentParser (
+        description = "Convert a single-page PDF to a high-resolution PNG image."
     )
-    parser.add_argument("input", help="Path to the input PDF file")
-    parser.add_argument("output", help="Path for the output PNG file")
-    parser.add_argument(
+    parser.add_argument ( "input", help = "Path to the input PDF file" )
+    parser.add_argument ( "output", help = "Path for the output PNG file" )
+    parser.add_argument (
         "--dpi",
-        type=int,
-        default=300,
-        help="Resolution in DPI (default: 300)"
+        type    = int,
+        default = 300,
+        help    = "Resolution in DPI (default: 300)"
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args ()
 
     try:
-        pdf_to_png(args.input, args.output, args.dpi)
-    except (FileNotFoundError, ValueError) as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
+        pdf_to_png ( args.input, args.output, args.dpi )
+    except ( FileNotFoundError, ValueError ) as e:
+        print ( f"Error: {e}", file = sys.stderr )
+        sys.exit ( 1 )
 
 
 if __name__ == "__main__":
-    main()
+    main ()

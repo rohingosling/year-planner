@@ -11,8 +11,8 @@
 #-----------------------------------------------------------------------------------------------------------------------
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from pathlib     import Path
+from typing      import Any
 
 import yaml
 
@@ -217,6 +217,7 @@ class DebugConfig:
 
 @dataclass
 class ConfigInfoOverlayConfig:
+
     bottom: float
     right: float
     left: float
@@ -242,6 +243,7 @@ class ConfigInfoOverlayConfig:
 
 @dataclass
 class ContactTableConfig:
+
     row_height: float
     label_width: float
     value_width: float
@@ -262,7 +264,8 @@ class ContactTableConfig:
 
 @dataclass
 class CoverConfig:
-    contact_fields: list[str]
+
+    contact_fields: list [ str ]
     contact_table: ContactTableConfig
 
 
@@ -286,13 +289,14 @@ class CoverConfig:
 
 @dataclass
 class Config:
+
     debug: DebugConfig
     config_info_overlay: ConfigInfoOverlayConfig
     document: DocumentConfig
     page: PageConfig
     table: TableConfig
     cover: CoverConfig
-    raw: dict[str, Any]
+    raw: dict [ str, Any ]
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -319,112 +323,117 @@ class Config:
 #   yaml.YAMLError    : If the configuration file contains invalid YAML.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def load_config(config_path: str | Path) -> Config:
+def load_config ( config_path: str | Path ) -> Config:
 
     # Load configuration from a YAML file.
 
-    config_path = Path(config_path)
+    config_path = Path ( config_path )
 
-    with open(config_path, 'r', encoding='utf-8') as f:
-        raw = yaml.safe_load(f)
+    with open ( config_path, 'r', encoding = 'utf-8' ) as f:
+        raw = yaml.safe_load ( f )
 
-    document = DocumentConfig(
-        title=raw['document']['title'],
-        version=raw['document']['version'],
-        year=raw['document']['year']
+    document = DocumentConfig (
+        title   = raw [ 'document' ] [ 'title' ],
+        version = raw [ 'document' ] [ 'version' ],
+        year    = raw [ 'document' ] [ 'year' ]
     )
 
-    page = PageConfig(
-        width=raw['page']['width'],
-        height=raw['page']['height'],
-        margin_top=raw['page']['margin_top'],
-        margin_bottom=raw['page']['margin_bottom'],
-        margin_left=raw['page']['margin_left'],
-        margin_right=raw['page']['margin_right'],
-        gutter_size=raw['page']['gutter_size'],
-        page_number_position=raw['page']['page_number_position']
+    page = PageConfig (
+        width                = raw [ 'page' ] [ 'width' ],
+        height               = raw [ 'page' ] [ 'height' ],
+        margin_top           = raw [ 'page' ] [ 'margin_top' ],
+        margin_bottom        = raw [ 'page' ] [ 'margin_bottom' ],
+        margin_left          = raw [ 'page' ] [ 'margin_left' ],
+        margin_right         = raw [ 'page' ] [ 'margin_right' ],
+        gutter_size          = raw [ 'page' ] [ 'gutter_size' ],
+        page_number_position = raw [ 'page' ] [ 'page_number_position' ]
     )
 
     # Parse table config with nested structures
 
-    table_raw = raw['table']
+    table_raw = raw [ 'table' ]
 
-    border = BorderConfig(
-        thickness=table_raw['border']['thickness'],
-        grayscale=table_raw['border']['grayscale']
+    border = BorderConfig (
+        thickness = table_raw [ 'border' ] [ 'thickness' ],
+        grayscale = table_raw [ 'border' ] [ 'grayscale' ]
     )
 
-    title_row = TitleRowConfig(
-        height=table_raw['title_row']['height'],
-        background_grayscale=table_raw['title_row']['background_grayscale'],
-        font_size=table_raw['title_row']['font_size'],
-        font_grayscale=table_raw['title_row']['font_grayscale']
+    title_row = TitleRowConfig (
+        height               = table_raw [ 'title_row' ] [ 'height' ],
+        background_grayscale = table_raw [ 'title_row' ] [ 'background_grayscale' ],
+        font_size            = table_raw [ 'title_row' ] [ 'font_size' ],
+        font_grayscale       = table_raw [ 'title_row' ] [ 'font_grayscale' ]
     )
 
-    header_row = HeaderRowConfig(
-        height=table_raw['header_row']['height'],
-        background_grayscale=table_raw['header_row']['background_grayscale'],
-        font_size=table_raw['header_row']['font_size'],
-        font_grayscale=table_raw['header_row']['font_grayscale']
+    header_row = HeaderRowConfig (
+        height               = table_raw [ 'header_row' ] [ 'height' ],
+        background_grayscale = table_raw [ 'header_row' ] [ 'background_grayscale' ],
+        font_size            = table_raw [ 'header_row' ] [ 'font_size' ],
+        font_grayscale       = table_raw [ 'header_row' ] [ 'font_grayscale' ]
     )
 
-    content_row = ContentRowConfig(
-        font_size=table_raw['content_row']['font_size'],
-        font_grayscale=table_raw['content_row']['font_grayscale'],
-        font_italic=table_raw['content_row']['font_italic']
+    content_row = ContentRowConfig (
+        font_size      = table_raw [ 'content_row' ] [ 'font_size' ],
+        font_grayscale = table_raw [ 'content_row' ] [ 'font_grayscale' ],
+        font_italic    = table_raw [ 'content_row' ] [ 'font_italic' ]
     )
 
-    table = TableConfig(
-        border=border,
-        title_row=title_row,
-        header_row=header_row,
-        content_row=content_row
+    table = TableConfig (
+        border      = border,
+        title_row   = title_row,
+        header_row  = header_row,
+        content_row = content_row
     )
 
-    contact_table = ContactTableConfig(
-        row_height=raw['cover']['contact_table']['row_height'],
-        label_width=raw['cover']['contact_table']['label_width'],
-        value_width=raw['cover']['contact_table']['value_width']
+    contact_table = ContactTableConfig (
+        row_height  = raw [ 'cover' ] [ 'contact_table' ] [ 'row_height' ],
+        label_width = raw [ 'cover' ] [ 'contact_table' ] [ 'label_width' ],
+        value_width = raw [ 'cover' ] [ 'contact_table' ] [ 'value_width' ]
     )
 
-    cover = CoverConfig(
-        contact_fields=raw['cover']['contact_fields'],
-        contact_table=contact_table
+    cover = CoverConfig (
+        contact_fields = raw [ 'cover' ] [ 'contact_fields' ],
+        contact_table  = contact_table
     )
 
     # Parse debug config (handle both old boolean and new dict format)
 
-    debug_raw = raw.get('debug', {})
-    if isinstance(debug_raw, bool):
+    debug_raw = raw.get ( 'debug', {} )
+
+    if isinstance ( debug_raw, bool ):
+
         # Backwards compatibility with old format
-        debug = DebugConfig(enabled=debug_raw, config_info_overlay=False)
+
+        debug = DebugConfig ( enabled = debug_raw, config_info_overlay = False )
+
     else:
-        debug = DebugConfig(
-            enabled=debug_raw.get('enabled', False),
-            config_info_overlay=debug_raw.get('config_info_overlay', False)
+
+        debug = DebugConfig (
+            enabled             = debug_raw.get ( 'enabled', False ),
+            config_info_overlay = debug_raw.get ( 'config_info_overlay', False )
         )
 
     # Parse config info overlay settings
 
-    overlay_raw = raw.get('config_info_overlay', {})
-    config_info_overlay = ConfigInfoOverlayConfig(
-        bottom=overlay_raw.get('bottom', 1.8),
-        right=overlay_raw.get('right', 1.2),
-        left=overlay_raw.get('left', 1.2),
-        width=overlay_raw.get('width', 6.0),
-        title=overlay_raw.get('title', 'Config Info'),
-        title_font_size=overlay_raw.get('title_font_size', 8),
-        data_font_size=overlay_raw.get('data_font_size', 6)
+    overlay_raw = raw.get ( 'config_info_overlay', {} )
+    config_info_overlay = ConfigInfoOverlayConfig (
+        bottom          = overlay_raw.get ( 'bottom', 1.8 ),
+        right           = overlay_raw.get ( 'right', 1.2 ),
+        left            = overlay_raw.get ( 'left', 1.2 ),
+        width           = overlay_raw.get ( 'width', 6.0 ),
+        title           = overlay_raw.get ( 'title', 'Config Info' ),
+        title_font_size = overlay_raw.get ( 'title_font_size', 8 ),
+        data_font_size  = overlay_raw.get ( 'data_font_size', 6 )
     )
 
     # Return data to caller.
 
-    return Config(
-        debug=debug,
-        config_info_overlay=config_info_overlay,
-        document=document,
-        page=page,
-        table=table,
-        cover=cover,
-        raw=raw
+    return Config (
+        debug               = debug,
+        config_info_overlay = config_info_overlay,
+        document            = document,
+        page                = page,
+        table               = table,
+        cover               = cover,
+        raw                 = raw
     )

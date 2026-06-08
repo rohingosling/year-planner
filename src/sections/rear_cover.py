@@ -12,7 +12,7 @@
 
 from docx import Document
 
-from src.config import Config
+from src.config   import Config
 from src.document import add_page_break, add_config_info_overlay
 
 
@@ -35,7 +35,7 @@ from src.document import add_page_break, add_config_info_overlay
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def generate_rear_cover(document: Document, config: Config) -> None:
+def generate_rear_cover ( document: Document, config: Config ) -> None:
 
     # Generate the rear cover (blank recto and verso).
 
@@ -43,12 +43,12 @@ def generate_rear_cover(document: Document, config: Config) -> None:
     # The previous section's page break positions us on this recto.
     # Add minimal content to ensure the page exists.
 
-    para = document.add_paragraph()
+    para                               = document.add_paragraph ()
     para.paragraph_format.space_before = 0
-    para.paragraph_format.space_after = 0
-    add_config_info_overlay(document, config, is_recto=True)
+    para.paragraph_format.space_after  = 0
+    add_config_info_overlay ( document, config, is_recto = True )
 
     # Outside rear cover (verso) — blank.
 
-    add_page_break(document)
-    add_config_info_overlay(document, config, is_recto=False)
+    add_page_break ( document )
+    add_config_info_overlay ( document, config, is_recto = False )

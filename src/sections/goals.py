@@ -9,11 +9,11 @@
 #   Goals page generator for the Year Planner. Generates a single page with a Goals table for long-term goal planning.
 #-----------------------------------------------------------------------------------------------------------------------
 
-from docx import Document
-from docx.shared import Pt, RGBColor
+from docx            import Document
+from docx.shared     import Pt, RGBColor
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml.ns import qn
-from docx.oxml import parse_xml
+from docx.oxml.ns    import qn
+from docx.oxml       import parse_xml
 
 from src.config import Config
 from src.document import (
@@ -44,29 +44,29 @@ from src.utils.styles import FONT_NAME, COLOR_BLACK
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def generate_goals_page(document: Document, config: Config) -> None:
+def generate_goals_page ( document: Document, config: Config ) -> None:
 
     # Generate the Goals page.
 
     # Get goals config.
 
-    goals_config = config.raw.get('goals', {})
-    num_columns = goals_config.get('columns', 2)
-    num_rows = goals_config.get('rows', 4)
+    goals_config = config.raw.get ( 'goals', {} )
+    num_columns  = goals_config.get ( 'columns', 2 )
+    num_rows     = goals_config.get ( 'rows', 4 )
 
     # Create the goals table.
 
-    _create_goals_table(document, config, num_columns, num_rows)
+    _create_goals_table ( document, config, num_columns, num_rows )
 
     # Add overlay (recto page).
 
-    add_config_info_overlay(document, config, is_recto=True)
+    add_config_info_overlay ( document, config, is_recto = True )
 
     # Add blank verso page so the next section starts on the recto.
     # Use minimize_height=True to avoid overflow since the table fills the page.
 
-    add_page_break(document, minimize_height=True)
-    add_config_info_overlay(document, config, is_recto=False)
+    add_page_break ( document, minimize_height = True )
+    add_config_info_overlay ( document, config, is_recto = False )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -92,97 +92,98 @@ def generate_goals_page(document: Document, config: Config) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _create_goals_table(document: Document, config: Config,
-                        num_columns: int, num_rows: int) -> None:
+def _create_goals_table ( document: Document, config: Config,
+                          num_columns: int, num_rows: int ) -> None:
 
     # Create the Goals table.
 
     # Create table: title row + content rows.
 
-    total_rows = 1 + num_rows  # title + content
-    table = document.add_table(rows=total_rows, cols=num_columns)
+    total_rows      = 1 + num_rows  # title + content
+    table           = document.add_table ( rows = total_rows, cols = num_columns )
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table.autofit = False
+    table.autofit   = False
 
     # Set fixed table layout.
 
-    _set_table_layout_fixed(table)
+    _set_table_layout_fixed ( table )
 
     # Calculate column widths (equal distribution).
 
-    total_width_twips = get_content_width_twips(config)
-    col_width_twips = total_width_twips // num_columns
-    col_widths = [col_width_twips] * num_columns
+    total_width_twips = get_content_width_twips ( config )
+    col_width_twips   = total_width_twips // num_columns
+    col_widths        = [ col_width_twips ] * num_columns
 
     # Adjust last column for any rounding.
 
-    col_widths[-1] = total_width_twips - (col_width_twips * (num_columns - 1))
+    col_widths [ -1 ] = total_width_twips - ( col_width_twips * ( num_columns - 1 ) )
 
     # Set table grid column widths.
 
-    _set_table_grid(table, col_widths)
+    _set_table_grid ( table, col_widths )
 
     # Get row heights from config.
 
-    title_row_height_twips = get_title_row_height_twips(config)
+    title_row_height_twips = get_title_row_height_twips ( config )
 
     # Compute content row height dynamically to fill the exact vertical content area.
     # Goals table has no header row, only a title row.
 
-    content_row_height_twips = compute_table_row_height(
-        config=config,
-        num_content_rows=num_rows,
-        title_row_height_twips=title_row_height_twips,
-        header_row_height_twips=0,  # No header row
-        preceding_paragraph_height_twips=MINIMIZED_PARAGRAPH_HEIGHT_TWIPS
+    content_row_height_twips = compute_table_row_height (
+        config                           = config,
+        num_content_rows                 = num_rows,
+        title_row_height_twips           = title_row_height_twips,
+        header_row_height_twips          = 0,  # No header row
+        preceding_paragraph_height_twips = MINIMIZED_PARAGRAPH_HEIGHT_TWIPS
     )
 
     # Get title row styling from config.
 
-    title_bg_hex = grayscale_to_hex(config.table.title_row.background_grayscale)
-    title_font_rgb = grayscale_to_rgb(config.table.title_row.font_grayscale)
-    title_font_color = RGBColor(*title_font_rgb)
-    title_font_size = Pt(config.table.title_row.font_size)
+    title_bg_hex     = grayscale_to_hex ( config.table.title_row.background_grayscale )
+    title_font_rgb   = grayscale_to_rgb ( config.table.title_row.font_grayscale )
+    title_font_color = RGBColor ( *title_font_rgb )
+    title_font_size  = Pt ( config.table.title_row.font_size )
 
     # === TITLE ROW ===
 
-    title_row = table.rows[0]
-    _set_row_height(title_row, title_row_height_twips)
+    title_row = table.rows [ 0 ]
+    _set_row_height ( title_row, title_row_height_twips )
 
     # Merge all cells in the title row.
 
-    title_cell = title_row.cells[0]
-    for i in range(1, num_columns):
-        title_cell.merge(title_row.cells[i])
+    title_cell = title_row.cells [ 0 ]
+    for i in range ( 1, num_columns ):
+        title_cell.merge ( title_row.cells [ i ] )
 
     # Set title cell width.
 
-    _set_cell_width(title_cell, total_width_twips)
+    _set_cell_width ( title_cell, total_width_twips )
 
     # Title cell: "Goals" - config background, config font, bold.
 
-    _set_cell_shading(title_cell, title_bg_hex)
-    _set_cell_vertical_alignment(title_cell, "center")
-    _add_cell_text(title_cell, "Goals", size=title_font_size, bold=True,
-                   color=title_font_color, align=None)
+    _set_cell_shading ( title_cell, title_bg_hex )
+    _set_cell_vertical_alignment ( title_cell, "center" )
+    _add_cell_text ( title_cell, "Goals", size = title_font_size, bold = True,
+                     color = title_font_color, align = None )
 
     # === CONTENT ROWS ===
 
-    for row_idx in range(num_rows):
-        row = table.rows[row_idx + 1]
-        _set_row_height(row, content_row_height_twips)
+    for row_idx in range ( num_rows ):
+        row = table.rows [ row_idx + 1 ]
+        _set_row_height ( row, content_row_height_twips )
 
         # Set cell widths and alignment for each column.
 
-        for col_idx in range(num_columns):
-            cell = row.cells[col_idx]
-            _set_cell_width(cell, col_widths[col_idx])
-            _set_cell_vertical_alignment(cell, "center")
+        for col_idx in range ( num_columns ):
+            cell = row.cells [ col_idx ]
+            _set_cell_width ( cell, col_widths [ col_idx ] )
+            _set_cell_vertical_alignment ( cell, "center" )
+
             # Leave cells empty for the user to fill in.
 
     # Apply borders using config settings.
 
-    _set_table_borders(table, config)
+    _set_table_borders ( table, config )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -201,23 +202,23 @@ def _create_goals_table(document: Document, config: Config,
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_table_layout_fixed(table) -> None:
+def _set_table_layout_fixed ( table ) -> None:
 
     # Set the table layout to fixed.
 
-    tbl = table._tbl
+    tbl    = table._tbl
     tbl_pr = tbl.tblPr
     if tbl_pr is None:
-        tbl_pr = parse_xml(
+        tbl_pr = parse_xml (
             r'<w:tblPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
         )
-        tbl.insert(0, tbl_pr)
+        tbl.insert ( 0, tbl_pr )
 
-    tbl_layout = parse_xml(
+    tbl_layout = parse_xml (
         '<w:tblLayout xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         'w:type="fixed"/>'
     )
-    tbl_pr.append(tbl_layout)
+    tbl_pr.append ( tbl_layout )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -237,7 +238,7 @@ def _set_table_layout_fixed(table) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_table_grid(table, col_widths: list[int]) -> None:
+def _set_table_grid ( table, col_widths: list [ int ] ) -> None:
 
     # Set the table grid column widths.
 
@@ -245,9 +246,9 @@ def _set_table_grid(table, col_widths: list[int]) -> None:
 
     # Remove the existing grid if any.
 
-    existing_grid = tbl.find(qn('w:tblGrid'))
+    existing_grid = tbl.find ( qn ( 'w:tblGrid' ) )
     if existing_grid is not None:
-        tbl.remove(existing_grid)
+        tbl.remove ( existing_grid )
 
     # Create a new grid.
 
@@ -256,15 +257,15 @@ def _set_table_grid(table, col_widths: list[int]) -> None:
         grid_xml += f'<w:gridCol w:w="{width}"/>'
     grid_xml += '</w:tblGrid>'
 
-    tbl_grid = parse_xml(grid_xml)
+    tbl_grid = parse_xml ( grid_xml )
 
     # Insert after tblPr.
 
     tbl_pr = tbl.tblPr
     if tbl_pr is not None:
-        tbl_pr.addnext(tbl_grid)
+        tbl_pr.addnext ( tbl_grid )
     else:
-        tbl.insert(0, tbl_grid)
+        tbl.insert ( 0, tbl_grid )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -286,25 +287,25 @@ def _set_table_grid(table, col_widths: list[int]) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_row_height(row, height_twips: int, exact: bool = True) -> None:
+def _set_row_height ( row, height_twips: int, exact: bool = True ) -> None:
 
     # Set the row height in twips.
 
-    tr = row._tr
-    tr_pr = tr.get_or_add_trPr()
+    tr    = row._tr
+    tr_pr = tr.get_or_add_trPr ()
 
     # Remove the existing height if any.
 
-    existing_height = tr_pr.find(qn('w:trHeight'))
+    existing_height = tr_pr.find ( qn ( 'w:trHeight' ) )
     if existing_height is not None:
-        tr_pr.remove(existing_height)
+        tr_pr.remove ( existing_height )
 
     h_rule = "exact" if exact else "atLeast"
-    tr_height = parse_xml(
+    tr_height = parse_xml (
         f'<w:trHeight xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         f'w:val="{height_twips}" w:hRule="{h_rule}"/>'
     )
-    tr_pr.append(tr_height)
+    tr_pr.append ( tr_height )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -324,24 +325,24 @@ def _set_row_height(row, height_twips: int, exact: bool = True) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_cell_width(cell, width_dxa: int) -> None:
+def _set_cell_width ( cell, width_dxa: int ) -> None:
 
     # Set the cell width in dxa (twips).
 
-    tc = cell._tc
-    tc_pr = tc.get_or_add_tcPr()
+    tc    = cell._tc
+    tc_pr = tc.get_or_add_tcPr ()
 
     # Remove the existing width if any.
 
-    existing_width = tc_pr.find(qn('w:tcW'))
+    existing_width = tc_pr.find ( qn ( 'w:tcW' ) )
     if existing_width is not None:
-        tc_pr.remove(existing_width)
+        tc_pr.remove ( existing_width )
 
-    tc_w = parse_xml(
+    tc_w = parse_xml (
         f'<w:tcW xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         f'w:w="{width_dxa}" w:type="dxa"/>'
     )
-    tc_pr.insert(0, tc_w)
+    tc_pr.insert ( 0, tc_w )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -361,24 +362,24 @@ def _set_cell_width(cell, width_dxa: int) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_cell_vertical_alignment(cell, alignment: str) -> None:
+def _set_cell_vertical_alignment ( cell, alignment: str ) -> None:
 
     # Set the vertical alignment of a cell.
 
-    tc = cell._tc
-    tc_pr = tc.get_or_add_tcPr()
+    tc    = cell._tc
+    tc_pr = tc.get_or_add_tcPr ()
 
     # Remove the existing vAlign if any.
 
-    existing_valign = tc_pr.find(qn('w:vAlign'))
+    existing_valign = tc_pr.find ( qn ( 'w:vAlign' ) )
     if existing_valign is not None:
-        tc_pr.remove(existing_valign)
+        tc_pr.remove ( existing_valign )
 
-    v_align = parse_xml(
+    v_align = parse_xml (
         f'<w:vAlign xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         f'w:val="{alignment}"/>'
     )
-    tc_pr.append(v_align)
+    tc_pr.append ( v_align )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -398,17 +399,17 @@ def _set_cell_vertical_alignment(cell, alignment: str) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_cell_shading(cell, color_hex: str) -> None:
+def _set_cell_shading ( cell, color_hex: str ) -> None:
 
     # Set the background shading color of a cell.
 
-    tc = cell._tc
-    tc_pr = tc.get_or_add_tcPr()
-    shd = parse_xml(
+    tc    = cell._tc
+    tc_pr = tc.get_or_add_tcPr ()
+    shd = parse_xml (
         f'<w:shd xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         f'w:val="clear" w:color="auto" w:fill="{color_hex}"/>'
     )
-    tc_pr.append(shd)
+    tc_pr.append ( shd )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -432,15 +433,15 @@ def _set_cell_shading(cell, color_hex: str) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _add_cell_text(cell, text: str, size=None, bold: bool = False,
-                   color=COLOR_BLACK, align=None) -> None:
+def _add_cell_text ( cell, text: str, size = None, bold: bool = False,
+                     color = COLOR_BLACK, align = None ) -> None:
 
     # Add formatted text to a table cell.
 
-    para = cell.paragraphs[0]
+    para = cell.paragraphs [ 0 ]
     if align is not None:
         para.alignment = align
-    run = para.add_run(text)
+    run           = para.add_run ( text )
     run.font.name = FONT_NAME
     if size is not None:
         run.font.size = size
@@ -466,21 +467,21 @@ def _add_cell_text(cell, text: str, size=None, bold: bool = False,
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_table_borders(table, config: Config) -> None:
+def _set_table_borders ( table, config: Config ) -> None:
 
     # Set table borders using config settings.
 
     # Get border settings from config.
 
-    border_color_hex = grayscale_to_hex(config.table.border.grayscale)
-    border_size = int(config.table.border.thickness * 8)  # Eighths of a point
+    border_color_hex = grayscale_to_hex ( config.table.border.grayscale )
+    border_size      = int ( config.table.border.thickness * 8 )  # Eighths of a point
 
     tbl = table._tbl
-    tbl_pr = tbl.tblPr if tbl.tblPr is not None else parse_xml(
+    tbl_pr = tbl.tblPr if tbl.tblPr is not None else parse_xml (
         r'<w:tblPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
     )
 
-    tbl_borders = parse_xml(
+    tbl_borders = parse_xml (
         f'''<w:tblBorders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
             <w:top w:val="single" w:sz="{border_size}" w:color="{border_color_hex}"/>
             <w:left w:val="single" w:sz="{border_size}" w:color="{border_color_hex}"/>
@@ -491,6 +492,6 @@ def _set_table_borders(table, config: Config) -> None:
         </w:tblBorders>'''
     )
 
-    tbl_pr.append(tbl_borders)
+    tbl_pr.append ( tbl_borders )
     if tbl.tblPr is None:
-        tbl.insert(0, tbl_pr)
+        tbl.insert ( 0, tbl_pr )

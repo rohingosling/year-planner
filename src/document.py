@@ -9,14 +9,14 @@
 #   Document initialization and configuration for the Year Planner. Handles document setup, page layout, and margins.
 #-----------------------------------------------------------------------------------------------------------------------
 
-from docx import Document
-from docx.shared import Cm, Pt, Twips
+from docx              import Document
+from docx.shared       import Cm, Pt, Twips
 from docx.enum.section import WD_ORIENT
-from docx.enum.style import WD_STYLE_TYPE
-from docx.enum.text import WD_LINE_SPACING
-from docx.section import Section
-from docx.oxml import parse_xml
-from docx.oxml.ns import qn
+from docx.enum.style   import WD_STYLE_TYPE
+from docx.enum.text    import WD_LINE_SPACING
+from docx.section      import Section
+from docx.oxml         import parse_xml
+from docx.oxml.ns      import qn
 
 from src.config import Config
 
@@ -35,7 +35,7 @@ TWIPS_PER_PT = 20
 # Default document settings.
 
 DEFAULT_FONT_NAME = "Times New Roman"
-DEFAULT_FONT_SIZE = Pt(11)
+DEFAULT_FONT_SIZE = Pt ( 11 )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -54,26 +54,26 @@ DEFAULT_FONT_SIZE = Pt(11)
 #   Initialized Document object.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def create_document(config: Config) -> Document:
+def create_document ( config: Config ) -> Document:
 
     # Create and initialize a new Word document with configured page settings.
 
-    document = Document()
+    document = Document ()
 
     # Configure default styles.
 
-    _configure_default_styles(document)
+    _configure_default_styles ( document )
 
     # Enable mirror margins for duplex printing.
     # This makes Word use "Inside/Outside" margins instead of "Left/Right" and automatically alternates the gutter
     # position for recto/verso pages.
 
-    _enable_mirror_margins(document)
+    _enable_mirror_margins ( document )
 
     # Configure the default section.
 
-    section = document.sections[0]
-    configure_section(section, config)
+    section = document.sections [ 0 ]
+    configure_section ( section, config )
 
     # Return data to caller.
 
@@ -99,7 +99,7 @@ def create_document(config: Config) -> Document:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _enable_mirror_margins(document: Document) -> None:
+def _enable_mirror_margins ( document: Document ) -> None:
 
     # Enable mirror margins for duplex printing.
 
@@ -109,10 +109,10 @@ def _enable_mirror_margins(document: Document) -> None:
 
     # Add the mirrorMargins element.
 
-    mirror_margins = parse_xml(
+    mirror_margins = parse_xml (
         '<w:mirrorMargins xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
     )
-    settings.append(mirror_margins)
+    settings.append ( mirror_margins )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -136,17 +136,17 @@ def _enable_mirror_margins(document: Document) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _configure_default_styles(document: Document) -> None:
+def _configure_default_styles ( document: Document ) -> None:
 
     # Configure document-wide default styles.
 
     # Configure the Normal style (affects all paragraphs by default).
 
-    style = document.styles['Normal']
-    style.font.name = DEFAULT_FONT_NAME
-    style.font.size = DEFAULT_FONT_SIZE
-    style.paragraph_format.space_before = Pt(0)
-    style.paragraph_format.space_after = Pt(0)
+    style                                    = document.styles [ 'Normal' ]
+    style.font.name                          = DEFAULT_FONT_NAME
+    style.font.size                          = DEFAULT_FONT_SIZE
+    style.paragraph_format.space_before      = Pt ( 0 )
+    style.paragraph_format.space_after       = Pt ( 0 )
     style.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
 
 
@@ -171,41 +171,41 @@ def _configure_default_styles(document: Document) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def configure_section(section: Section, config: Config) -> None:
+def configure_section ( section: Section, config: Config ) -> None:
 
     # Configure page layout for a document section.
 
     # Set page size (A4: 21.0 x 29.7 cm).
 
-    section.page_width = Cm(config.page.width)
-    section.page_height = Cm(config.page.height)
+    section.page_width  = Cm ( config.page.width )
+    section.page_height = Cm ( config.page.height )
     section.orientation = WD_ORIENT.PORTRAIT
 
     # Set margins (in cm).
     # With mirror margins: left = inside (binding), right = outside.
 
-    section.top_margin = Cm(config.page.margin_top)
-    section.bottom_margin = Cm(config.page.margin_bottom)
-    section.left_margin = Cm(config.page.margin_left)    # Inside margin (binding edge)
-    section.right_margin = Cm(config.page.margin_right)  # Outside margin (outer edge)
+    section.top_margin    = Cm ( config.page.margin_top )
+    section.bottom_margin = Cm ( config.page.margin_bottom )
+    section.left_margin   = Cm ( config.page.margin_left )    # Inside margin (binding edge)
+    section.right_margin  = Cm ( config.page.margin_right )  # Outside margin (outer edge)
 
     # Gutter adds extra space on the binding edge for duplex printing.
     # With mirror margins, Word automatically alternates the gutter side.
 
-    section.gutter = Cm(config.page.gutter_size)
+    section.gutter = Cm ( config.page.gutter_size )
 
     # Footer distance from bottom.
 
-    section.footer_distance = Cm(config.page.page_number_position)
+    section.footer_distance = Cm ( config.page.page_number_position )
 
     # Header distance from top (set to 0 so headers don't affect the content area).
 
-    section.header_distance = Cm(0)
+    section.header_distance = Cm ( 0 )
 
     # Add debug visualization if enabled.
 
     if config.debug.enabled:
-        _add_debug_visualization(section, config)
+        _add_debug_visualization ( section, config )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -234,62 +234,65 @@ def configure_section(section: Section, config: Config) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _add_debug_visualization(section: Section, config: Config) -> None:
+def _add_debug_visualization ( section: Section, config: Config ) -> None:
 
     # Add debug visualization using odd/even headers for correct recto/verso positioning.
 
     # Enable different odd/even headers.
 
-    sect_pr = section._sectPr
-    even_and_odd = sect_pr.find(qn('w:evenAndOddHeaders'))
+    sect_pr      = section._sectPr
+    even_and_odd = sect_pr.find ( qn ( 'w:evenAndOddHeaders' ) )
+
     if even_and_odd is None:
-        even_and_odd = parse_xml(
+
+        even_and_odd = parse_xml (
             '<w:evenAndOddHeaders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
         )
-        sect_pr.append(even_and_odd)
+        sect_pr.append ( even_and_odd )
 
     # Get measurements.
 
-    margin_top_cm = config.page.margin_top
-    margin_bottom_cm = config.page.margin_bottom
-    margin_left_cm = config.page.margin_left
-    margin_right_cm = config.page.margin_right
-    gutter_cm = config.page.gutter_size
-    page_width_cm = config.page.width
-    page_height_cm = config.page.height
+    margin_top_cm      = config.page.margin_top
+    margin_bottom_cm   = config.page.margin_bottom
+    margin_left_cm     = config.page.margin_left
+    margin_right_cm    = config.page.margin_right
+    gutter_cm          = config.page.gutter_size
+    page_width_cm      = config.page.width
+    page_height_cm     = config.page.height
     footer_distance_cm = config.page.page_number_position
 
     # Content area boundary (where the red rectangle goes) = gutter + margin from binding edge.
 
-    content_left_cm = gutter_cm + margin_left_cm  # Binding side (gutter + left margin)
-    content_right_cm = margin_right_cm  # Non-binding side (right margin only)
-    content_top_cm = margin_top_cm
+    content_left_cm   = gutter_cm + margin_left_cm  # Binding side (gutter + left margin)
+    content_right_cm  = margin_right_cm  # Non-binding side (right margin only)
+    content_top_cm    = margin_top_cm
     content_bottom_cm = margin_bottom_cm
 
     # Green line positions (header/footer text boundaries).
     # Top green line: at top margin (boundary between header and content).
     # Bottom green line: footer distance from bottom (where footer text region starts).
 
-    green_top_y_cm = margin_top_cm
+    green_top_y_cm    = margin_top_cm
     green_bottom_y_cm = page_height_cm - footer_distance_cm
 
     # Recto (odd) pages: binding on left.
 
-    recto_red_left = content_left_cm
+    recto_red_left  = content_left_cm
     recto_red_right = page_width_cm - content_right_cm
-    recto_blue_x = gutter_cm
+    recto_blue_x    = gutter_cm
 
     # Verso (even) pages: binding on right.
 
-    verso_red_left = content_right_cm
+    verso_red_left  = content_right_cm
     verso_red_right = page_width_cm - content_left_cm
-    verso_blue_x = page_width_cm - gutter_cm
+    verso_blue_x    = page_width_cm - gutter_cm
 
     # Create the odd page header (recto).
 
-    odd_header = section.header
+    odd_header                       = section.header
     odd_header.is_linked_to_previous = False
-    _add_debug_shapes_to_header(
+
+    _add_debug_shapes_to_header (
         odd_header,
         recto_red_left, content_top_cm,
         recto_red_right, page_height_cm - content_bottom_cm,
@@ -299,9 +302,10 @@ def _add_debug_visualization(section: Section, config: Config) -> None:
 
     # Create the even page header (verso).
 
-    even_header = section.even_page_header
+    even_header                       = section.even_page_header
     even_header.is_linked_to_previous = False
-    _add_debug_shapes_to_header(
+
+    _add_debug_shapes_to_header (
         even_header,
         verso_red_left, content_top_cm,
         verso_red_right, page_height_cm - content_bottom_cm,
@@ -340,7 +344,7 @@ def _add_debug_visualization(section: Section, config: Config) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _add_debug_shapes_to_header(
+def _add_debug_shapes_to_header (
     header,
     red_left_cm: float, red_top_cm: float,
     red_right_cm: float, red_bottom_cm: float,
@@ -354,57 +358,57 @@ def _add_debug_shapes_to_header(
 
     for paragraph in header.paragraphs:
         p = paragraph._p
-        p.getparent().remove(p)
+        p.getparent ().remove ( p )
 
     # Add a paragraph for the drawing with minimal height.
 
-    paragraph = header.add_paragraph()
+    paragraph = header.add_paragraph ()
 
     # Minimize paragraph height so the header doesn't push content down.
 
-    paragraph.paragraph_format.space_before = Pt(0)
-    paragraph.paragraph_format.space_after = Pt(0)
-    paragraph.paragraph_format.line_spacing = Pt(1)
+    paragraph.paragraph_format.space_before      = Pt ( 0 )
+    paragraph.paragraph_format.space_after       = Pt ( 0 )
+    paragraph.paragraph_format.line_spacing      = Pt ( 1 )
     paragraph.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
 
-    run = paragraph.add_run()
-    run.font.size = Pt(1)
+    run           = paragraph.add_run ()
+    run.font.size = Pt ( 1 )
 
     # Convert cm to inches for VML (1 inch = 2.54 cm).
 
-    def cm_to_in(cm):
+    def cm_to_in ( cm ):
         return cm / 2.54
 
     # Red rectangle dimensions.
 
-    red_width_in = cm_to_in(red_right_cm - red_left_cm)
-    red_height_in = cm_to_in(red_bottom_cm - red_top_cm)
-    red_left_in = cm_to_in(red_left_cm)
-    red_top_in = cm_to_in(red_top_cm)
+    red_width_in  = cm_to_in ( red_right_cm - red_left_cm )
+    red_height_in = cm_to_in ( red_bottom_cm - red_top_cm )
+    red_left_in   = cm_to_in ( red_left_cm )
+    red_top_in    = cm_to_in ( red_top_cm )
 
     # Blue line position.
 
-    blue_x_in = cm_to_in(blue_x_cm)
-    page_height_in = cm_to_in(page_height_cm)
+    blue_x_in      = cm_to_in ( blue_x_cm )
+    page_height_in = cm_to_in ( page_height_cm )
 
     # Green line positions.
 
-    page_width_in = cm_to_in(page_width_cm)
-    green_top_y_in = cm_to_in(green_top_y_cm)
-    green_bottom_y_in = cm_to_in(green_bottom_y_cm)
+    page_width_in     = cm_to_in ( page_width_cm )
+    green_top_y_in    = cm_to_in ( green_top_y_cm )
+    green_bottom_y_in = cm_to_in ( green_bottom_y_cm )
 
     # Convert to EMUs for DrawingML (1 inch = 914400 EMUs).
 
-    EMU_PER_IN = 914400
-    red_left_emu = int(red_left_in * EMU_PER_IN)
-    red_top_emu = int(red_top_in * EMU_PER_IN)
-    red_width_emu = int(red_width_in * EMU_PER_IN)
-    red_height_emu = int(red_height_in * EMU_PER_IN)
-    blue_x_emu = int(blue_x_in * EMU_PER_IN)
-    page_height_emu = int(page_height_in * EMU_PER_IN)
-    page_width_emu = int(page_width_in * EMU_PER_IN)
-    green_top_y_emu = int(green_top_y_in * EMU_PER_IN)
-    green_bottom_y_emu = int(green_bottom_y_in * EMU_PER_IN)
+    EMU_PER_IN         = 914400
+    red_left_emu       = int ( red_left_in * EMU_PER_IN )
+    red_top_emu        = int ( red_top_in * EMU_PER_IN )
+    red_width_emu      = int ( red_width_in * EMU_PER_IN )
+    red_height_emu     = int ( red_height_in * EMU_PER_IN )
+    blue_x_emu         = int ( blue_x_in * EMU_PER_IN )
+    page_height_emu    = int ( page_height_in * EMU_PER_IN )
+    page_width_emu     = int ( page_width_in * EMU_PER_IN )
+    green_top_y_emu    = int ( green_top_y_in * EMU_PER_IN )
+    green_bottom_y_emu = int ( green_bottom_y_in * EMU_PER_IN )
 
     # Create DrawingML shapes with explicit "in front of text" positioning.
     # relativeHeight controls z-order (higher = more in front).
@@ -583,23 +587,23 @@ def _add_debug_shapes_to_header(
 
     # Append the drawing shapes to the paragraph runs.
 
-    red_drawing = parse_xml(red_rect_xml)
-    run._r.append(red_drawing)
+    red_drawing = parse_xml ( red_rect_xml )
+    run._r.append ( red_drawing )
 
-    run2 = paragraph.add_run()
-    run2.font.size = Pt(1)
-    blue_drawing = parse_xml(blue_line_xml)
-    run2._r.append(blue_drawing)
+    run2           = paragraph.add_run ()
+    run2.font.size = Pt ( 1 )
+    blue_drawing   = parse_xml ( blue_line_xml )
+    run2._r.append ( blue_drawing )
 
-    run3 = paragraph.add_run()
-    run3.font.size = Pt(1)
-    green_top_drawing = parse_xml(green_top_line_xml)
-    run3._r.append(green_top_drawing)
+    run3              = paragraph.add_run ()
+    run3.font.size    = Pt ( 1 )
+    green_top_drawing = parse_xml ( green_top_line_xml )
+    run3._r.append ( green_top_drawing )
 
-    run4 = paragraph.add_run()
-    run4.font.size = Pt(1)
-    green_bottom_drawing = parse_xml(green_bottom_line_xml)
-    run4._r.append(green_bottom_drawing)
+    run4                 = paragraph.add_run ()
+    run4.font.size       = Pt ( 1 )
+    green_bottom_drawing = parse_xml ( green_bottom_line_xml )
+    run4._r.append ( green_bottom_drawing )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -626,8 +630,8 @@ def _add_debug_shapes_to_header(
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def add_config_info_overlay(document: Document, config: Config, is_recto: bool = True,
-                            anchor_paragraph=None) -> None:
+def add_config_info_overlay ( document: Document, config: Config, is_recto: bool = True,
+                              anchor_paragraph = None ) -> None:
 
     # Add a configuration info text box to the current page in the document body.
 
@@ -637,26 +641,26 @@ def add_config_info_overlay(document: Document, config: Config, is_recto: bool =
     # Get measurements.
 
     overlay_bottom_cm = config.config_info_overlay.bottom
-    overlay_right_cm = config.config_info_overlay.right
-    overlay_left_cm = config.config_info_overlay.left
-    overlay_title = config.config_info_overlay.title
-    page_width_cm = config.page.width
-    page_height_cm = config.page.height
+    overlay_right_cm  = config.config_info_overlay.right
+    overlay_left_cm   = config.config_info_overlay.left
+    overlay_title     = config.config_info_overlay.title
+    page_width_cm     = config.page.width
+    page_height_cm    = config.page.height
 
     # Build config info text.
 
-    config_text = _build_config_info_text(config)
+    config_text = _build_config_info_text ( config )
 
     # Get settings from config.
 
-    title_font_size = config.config_info_overlay.title_font_size
-    data_font_size = config.config_info_overlay.data_font_size
+    title_font_size   = config.config_info_overlay.title_font_size
+    data_font_size    = config.config_info_overlay.data_font_size
     text_box_width_cm = config.config_info_overlay.width
 
     # Calculate text box dimensions based on content.
 
-    lines = [overlay_title, ''] + config_text.split('\n')
-    line_count = len(lines)
+    lines      = [ overlay_title, '' ] + config_text.split ( '\n' )
+    line_count = len ( lines )
 
     # Calculate exact height based on line heights (matching the exact lineRule in make_para).
     # Line heights: title uses title_font_size * 1.2, fields use data_font_size * 1.2.
@@ -664,12 +668,12 @@ def add_config_info_overlay(document: Document, config: Config, is_recto: bool =
 
     title_line_height_cm = title_font_size * 1.2 / 72 * 2.54
     field_line_height_cm = data_font_size * 1.2 / 72 * 2.54
-    text_height_cm = title_line_height_cm + field_line_height_cm * (line_count - 1)
+    text_height_cm       = title_line_height_cm + field_line_height_cm * ( line_count - 1 )
 
     # Text box internal margins (from bodyPr: tIns="45720" bIns="45720" EMUs).
     # 914400 EMU = 1 inch = 2.54 cm, so 45720 EMU = 0.127 cm.
 
-    vertical_padding_cm = 2 * (45720 / 914400 * 2.54)  # Top + bottom insets
+    vertical_padding_cm = 2 * ( 45720 / 914400 * 2.54 )  # Top + bottom insets
     estimated_height_cm = text_height_cm + vertical_padding_cm
 
     # Use the configured width for the text box.
@@ -680,11 +684,13 @@ def add_config_info_overlay(document: Document, config: Config, is_recto: bool =
     # Calculate x position for bottom-right (recto) or bottom-left (verso).
 
     if is_recto:
+
         # Recto (odd) pages: bottom-right.
         # Place right edge of text box at overlay_right from physical page right.
 
         x_cm = page_width_cm - overlay_right_cm - estimated_width_cm
     else:
+
         # Verso (even) pages: bottom-left.
         # Place left edge of text box at overlay_left from physical page left.
 
@@ -696,12 +702,12 @@ def add_config_info_overlay(document: Document, config: Config, is_recto: bool =
 
     # Add the text box to the document body.
 
-    _add_config_textbox_to_body(
+    _add_config_textbox_to_body (
         document, x_cm, y_cm,
         estimated_width_cm, estimated_height_cm,
         overlay_title, config_text,
         title_font_size, data_font_size,
-        anchor_paragraph=anchor_paragraph
+        anchor_paragraph = anchor_paragraph
     )
 
 
@@ -723,7 +729,7 @@ def add_config_info_overlay(document: Document, config: Config, is_recto: bool =
 #   Formatted string with all config values.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _build_config_info_text(config: Config) -> str:
+def _build_config_info_text ( config: Config ) -> str:
 
     # Build the text content for the config info overlay.
 
@@ -731,61 +737,61 @@ def _build_config_info_text(config: Config) -> str:
 
     # Document info.
 
-    lines.append(f"document.title: {config.document.title}")
-    lines.append(f"document.version: {config.document.version}")
-    lines.append(f"document.year: {config.document.year}")
-    lines.append("")
+    lines.append ( f"document.title: {config.document.title}" )
+    lines.append ( f"document.version: {config.document.version}" )
+    lines.append ( f"document.year: {config.document.year}" )
+    lines.append ( "" )
 
     # Page layout.
 
-    lines.append(f"page.width: {config.page.width} cm")
-    lines.append(f"page.height: {config.page.height} cm")
-    lines.append(f"page.margin_top: {config.page.margin_top} cm")
-    lines.append(f"page.margin_bottom: {config.page.margin_bottom} cm")
-    lines.append(f"page.margin_left: {config.page.margin_left} cm")
-    lines.append(f"page.margin_right: {config.page.margin_right} cm")
-    lines.append(f"page.gutter_size: {config.page.gutter_size} cm")
-    lines.append(f"page.page_number_position: {config.page.page_number_position} cm")
-    lines.append("")
+    lines.append ( f"page.width: {config.page.width} cm" )
+    lines.append ( f"page.height: {config.page.height} cm" )
+    lines.append ( f"page.margin_top: {config.page.margin_top} cm" )
+    lines.append ( f"page.margin_bottom: {config.page.margin_bottom} cm" )
+    lines.append ( f"page.margin_left: {config.page.margin_left} cm" )
+    lines.append ( f"page.margin_right: {config.page.margin_right} cm" )
+    lines.append ( f"page.gutter_size: {config.page.gutter_size} cm" )
+    lines.append ( f"page.page_number_position: {config.page.page_number_position} cm" )
+    lines.append ( "" )
 
     # Table styling - border.
 
-    lines.append(f"table.border.thickness: {config.table.border.thickness} pt")
-    lines.append(f"table.border.grayscale: {config.table.border.grayscale}")
-    lines.append("")
+    lines.append ( f"table.border.thickness: {config.table.border.thickness} pt" )
+    lines.append ( f"table.border.grayscale: {config.table.border.grayscale}" )
+    lines.append ( "" )
 
     # Table styling - title row.
 
-    lines.append(f"table.title_row.height: {config.table.title_row.height} pt")
-    lines.append(f"table.title_row.background_grayscale: {config.table.title_row.background_grayscale}")
-    lines.append(f"table.title_row.font_size: {config.table.title_row.font_size} pt")
-    lines.append(f"table.title_row.font_grayscale: {config.table.title_row.font_grayscale}")
-    lines.append("")
+    lines.append ( f"table.title_row.height: {config.table.title_row.height} pt" )
+    lines.append ( f"table.title_row.background_grayscale: {config.table.title_row.background_grayscale}" )
+    lines.append ( f"table.title_row.font_size: {config.table.title_row.font_size} pt" )
+    lines.append ( f"table.title_row.font_grayscale: {config.table.title_row.font_grayscale}" )
+    lines.append ( "" )
 
     # Table styling - header row.
 
-    lines.append(f"table.header_row.height: {config.table.header_row.height} pt")
-    lines.append(f"table.header_row.background_grayscale: {config.table.header_row.background_grayscale}")
-    lines.append(f"table.header_row.font_size: {config.table.header_row.font_size} pt")
-    lines.append(f"table.header_row.font_grayscale: {config.table.header_row.font_grayscale}")
-    lines.append("")
+    lines.append ( f"table.header_row.height: {config.table.header_row.height} pt" )
+    lines.append ( f"table.header_row.background_grayscale: {config.table.header_row.background_grayscale}" )
+    lines.append ( f"table.header_row.font_size: {config.table.header_row.font_size} pt" )
+    lines.append ( f"table.header_row.font_grayscale: {config.table.header_row.font_grayscale}" )
+    lines.append ( "" )
 
     # Table styling - content row.
 
-    lines.append(f"table.content_row.font_size: {config.table.content_row.font_size} pt")
-    lines.append(f"table.content_row.font_grayscale: {config.table.content_row.font_grayscale}")
-    lines.append(f"table.content_row.font_italic: {config.table.content_row.font_italic}")
-    lines.append("")
+    lines.append ( f"table.content_row.font_size: {config.table.content_row.font_size} pt" )
+    lines.append ( f"table.content_row.font_grayscale: {config.table.content_row.font_grayscale}" )
+    lines.append ( f"table.content_row.font_italic: {config.table.content_row.font_italic}" )
+    lines.append ( "" )
 
     # Config info overlay.
 
-    lines.append(f"config_info_overlay.bottom: {config.config_info_overlay.bottom} cm")
-    lines.append(f"config_info_overlay.right: {config.config_info_overlay.right} cm")
-    lines.append(f"config_info_overlay.left: {config.config_info_overlay.left} cm")
-    lines.append(f"config_info_overlay.width: {config.config_info_overlay.width} cm")
-    lines.append(f"config_info_overlay.title_font_size: {config.config_info_overlay.title_font_size} pt")
-    lines.append(f"config_info_overlay.data_font_size: {config.config_info_overlay.data_font_size} pt")
-    lines.append("")
+    lines.append ( f"config_info_overlay.bottom: {config.config_info_overlay.bottom} cm" )
+    lines.append ( f"config_info_overlay.right: {config.config_info_overlay.right} cm" )
+    lines.append ( f"config_info_overlay.left: {config.config_info_overlay.left} cm" )
+    lines.append ( f"config_info_overlay.width: {config.config_info_overlay.width} cm" )
+    lines.append ( f"config_info_overlay.title_font_size: {config.config_info_overlay.title_font_size} pt" )
+    lines.append ( f"config_info_overlay.data_font_size: {config.config_info_overlay.data_font_size} pt" )
+    lines.append ( "" )
 
     # Section configs from raw.
 
@@ -793,74 +799,88 @@ def _build_config_info_text(config: Config) -> str:
 
     # Cover contact table.
 
-    if 'cover' in raw and 'contact_table' in raw['cover']:
-        ct = raw['cover']['contact_table']
-        lines.append(f"cover.contact_table.label_grayscale: {ct.get('label_grayscale', 'N/A')}")
-        lines.append("")
+    if 'cover' in raw and 'contact_table' in raw [ 'cover' ]:
+
+        ct = raw [ 'cover' ] [ 'contact_table' ]
+        lines.append ( f"cover.contact_table.label_grayscale: {ct.get('label_grayscale', 'N/A')}" )
+        lines.append ( "" )
 
     # TOC.
 
     if 'toc' in raw:
-        toc = raw['toc']
-        lines.append(f"toc.rows_per_page: {toc.get('rows_per_page', 'N/A')}")
-        lines.append(f"toc.section_grayscale: {toc.get('section_grayscale', 'N/A')}")
-        lines.append(f"toc.first_item_grayscale: {toc.get('first_item_grayscale', 'N/A')}")
-        lines.append("")
+
+        toc = raw [ 'toc' ]
+        lines.append ( f"toc.rows_per_page: {toc.get('rows_per_page', 'N/A')}" )
+        lines.append ( f"toc.section_grayscale: {toc.get('section_grayscale', 'N/A')}" )
+        lines.append ( f"toc.first_item_grayscale: {toc.get('first_item_grayscale', 'N/A')}" )
+        lines.append ( "" )
 
     # Calendar.
 
     if 'calendar' in raw:
-        cal = raw['calendar']
-        lines.append(f"calendar.day_row_height: {cal.get('day_row_height', 'N/A')} pt")
-        lines.append(f"calendar.month_name_gap: {cal.get('month_name_gap', 'N/A')} pt")
-        lines.append("")
+
+        cal = raw [ 'calendar' ]
+
+        lines.append ( f"calendar.day_row_height: {cal.get('day_row_height', 'N/A')} pt" )
+        lines.append ( f"calendar.month_name_gap: {cal.get('month_name_gap', 'N/A')} pt" )
+        lines.append ( "" )
 
     # Week planner.
 
     if 'week_planner' in raw:
-        wp = raw['week_planner']
-        lines.append(f"week_planner.rows_per_page: {wp.get('rows_per_page', 'N/A')}")
-        lines.append(f"week_planner.first_week_grayscale: {wp.get('first_week_grayscale', 'N/A')}")
-        lines.append("")
+
+        wp = raw [ 'week_planner' ]
+
+        lines.append ( f"week_planner.rows_per_page: {wp.get('rows_per_page', 'N/A')}" )
+        lines.append ( f"week_planner.first_week_grayscale: {wp.get('first_week_grayscale', 'N/A')}" )
+        lines.append ( "" )
 
     # Goals.
 
     if 'goals' in raw:
-        g = raw['goals']
-        lines.append(f"goals.columns: {g.get('columns', 'N/A')}")
-        lines.append(f"goals.rows: {g.get('rows', 'N/A')}")
-        lines.append("")
+
+        g = raw [ 'goals' ]
+
+        lines.append ( f"goals.columns: {g.get('columns', 'N/A')}" )
+        lines.append ( f"goals.rows: {g.get('rows', 'N/A')}" )
+        lines.append ( "" )
 
     # Backlog.
 
     if 'backlog' in raw:
-        bl = raw['backlog']
-        lines.append(f"backlog.page_count: {bl.get('page_count', 'N/A')}")
-        lines.append(f"backlog.row_count: {bl.get('row_count', 'N/A')}")
-        lines.append("")
+
+        bl = raw [ 'backlog' ]
+
+        lines.append ( f"backlog.page_count: {bl.get('page_count', 'N/A')}" )
+        lines.append ( f"backlog.row_count: {bl.get('row_count', 'N/A')}" )
+        lines.append ( "" )
 
     # Daily spread.
 
     if 'daily_spread' in raw:
-        ds = raw['daily_spread']
-        lines.append(f"daily_spread.rows: {ds.get('rows', 'N/A')}")
-        lines.append(f"daily_spread.subject_width_percent: {ds.get('subject_width_percent', 'N/A')}%")
-        lines.append(f"daily_spread.table_gap: {ds.get('table_gap', 'N/A')} cm")
-        lines.append("")
+
+        ds = raw [ 'daily_spread' ]
+
+        lines.append ( f"daily_spread.rows: {ds.get('rows', 'N/A')}" )
+        lines.append ( f"daily_spread.subject_width_percent: {ds.get('subject_width_percent', 'N/A')}%" )
+        lines.append ( f"daily_spread.table_gap: {ds.get('table_gap', 'N/A')} cm" )
+        lines.append ( "" )
 
     # Graph paper.
 
     if 'graph_paper' in raw:
-        gp = raw['graph_paper']
-        lines.append(f"graph_paper.page_count: {gp.get('page_count', 'N/A')}")
-        lines.append(f"graph_paper.columns: {gp.get('columns', 'N/A')}")
-        lines.append(f"graph_paper.rows: {gp.get('rows', 'N/A')}")
-        lines.append(f"graph_paper.grid_color_percent: {gp.get('grid_color_percent', 'N/A')}")
-        lines.append(f"graph_paper.border_color_percent: {gp.get('border_color_percent', 'N/A')}")
+
+        gp = raw [ 'graph_paper' ]
+
+        lines.append ( f"graph_paper.page_count: {gp.get('page_count', 'N/A')}" )
+        lines.append ( f"graph_paper.columns: {gp.get('columns', 'N/A')}" )
+        lines.append ( f"graph_paper.rows: {gp.get('rows', 'N/A')}" )
+        lines.append ( f"graph_paper.grid_color_percent: {gp.get('grid_color_percent', 'N/A')}" )
+        lines.append ( f"graph_paper.border_color_percent: {gp.get('border_color_percent', 'N/A')}" )
 
     # Return data to caller.
 
-    return '\n'.join(lines)
+    return '\n'.join ( lines )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -891,13 +911,13 @@ def _build_config_info_text(config: Config) -> str:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _add_config_textbox_to_body(
+def _add_config_textbox_to_body (
     document: Document,
     x_cm: float, y_cm: float,
     width_cm: float, height_cm: float,
     title: str, content: str,
     title_font_size: float, data_font_size: float,
-    anchor_paragraph=None
+    anchor_paragraph = None
 ) -> None:
 
     # Add a config info text box to the document body.
@@ -905,84 +925,89 @@ def _add_config_textbox_to_body(
     import random
 
     if anchor_paragraph is not None:
+
         # Use the existing paragraph - add a run to it for the text box.
 
-        paragraph = anchor_paragraph
-        run = paragraph.add_run()
-        run.font.size = Pt(1)
+        paragraph     = anchor_paragraph
+        run           = paragraph.add_run ()
+        run.font.size = Pt ( 1 )
     else:
+
         # Create a new minimal paragraph to hold the text box.
 
-        paragraph = document.add_paragraph()
-        paragraph.paragraph_format.space_before = Pt(0)
-        paragraph.paragraph_format.space_after = Pt(0)
-        paragraph.paragraph_format.line_spacing = Pt(1)
+        paragraph                                    = document.add_paragraph ()
+        paragraph.paragraph_format.space_before      = Pt ( 0 )
+        paragraph.paragraph_format.space_after       = Pt ( 0 )
+        paragraph.paragraph_format.line_spacing      = Pt ( 1 )
         paragraph.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
 
-        run = paragraph.add_run()
-        run.font.size = Pt(1)
+        run           = paragraph.add_run ()
+        run.font.size = Pt ( 1 )
 
     # Convert cm to EMUs (914400 EMUs per inch, 1 inch = 2.54 cm).
 
     EMU_PER_CM = 914400 / 2.54
-    x_emu = int(x_cm * EMU_PER_CM)
-    y_emu = int(y_cm * EMU_PER_CM)
-    width_emu = int(width_cm * EMU_PER_CM)
-    height_emu = int(height_cm * EMU_PER_CM)
+    x_emu      = int ( x_cm * EMU_PER_CM )
+    y_emu      = int ( y_cm * EMU_PER_CM )
+    width_emu  = int ( width_cm * EMU_PER_CM )
+    height_emu = int ( height_cm * EMU_PER_CM )
 
     # Unique ID for this text box.
 
-    doc_pr_id = random.randint(10000, 99999)
+    doc_pr_id = random.randint ( 10000, 99999 )
 
     # Build text content - font sizes in half-points (Word uses half-points internally).
 
-    title_size_half_pt = int(title_font_size * 2)
-    field_size_half_pt = int(data_font_size * 2)
-    font_name = "Arial"
+    title_size_half_pt = int ( title_font_size * 2 )
+    field_size_half_pt = int ( data_font_size * 2 )
+    font_name          = "Arial"
 
     # Escape XML special characters in text.
 
-    def escape_xml(text: str) -> str:
-        return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    def escape_xml ( text: str ) -> str:
+        return text.replace ( '&', '&amp;' ).replace ( '<', '&lt;' ).replace ( '>', '&gt;' )
 
     # Create a run element with optional bold formatting and specified size.
 
-    def make_run(text: str, bold: bool = False, size_half_pt: int = 10) -> str:
+    def make_run ( text: str, bold: bool = False, size_half_pt: int = 10 ) -> str:
 
-        escaped = escape_xml(text)
+        escaped  = escape_xml ( text )
         bold_tag = '<w:b/>' if bold else ''
         return f'''<w:r><w:rPr><w:rFonts w:ascii="{font_name}" w:hAnsi="{font_name}" w:cs="{font_name}"/><w:sz w:val="{size_half_pt}"/><w:szCs w:val="{size_half_pt}"/>{bold_tag}</w:rPr><w:t xml:space="preserve">{escaped}</w:t></w:r>'''
 
     # Calculate line heights in twips (20 twips per point, with 1.2x line spacing).
 
-    title_line_height_twips = int(title_font_size * 1.2 * 20)
-    field_line_height_twips = int(data_font_size * 1.2 * 20)
+    title_line_height_twips = int ( title_font_size * 1.2 * 20 )
+    field_line_height_twips = int ( data_font_size * 1.2 * 20 )
 
     # Create a paragraph. Title uses larger font, fields use smaller font.
 
-    def make_para(text: str, is_title: bool = False) -> str:
+    def make_para ( text: str, is_title: bool = False ) -> str:
 
         if is_title:
+
             # Title line - larger font, bold, exact line height.
 
             return f'''<w:p><w:pPr><w:spacing w:after="0" w:line="{title_line_height_twips}" w:lineRule="exact"/></w:pPr>{make_run(text, bold=True, size_half_pt=title_size_half_pt)}</w:p>'''
         elif ':' not in text:
+
             # Empty line or line without colon - exact line height matching data fields.
 
             return f'''<w:p><w:pPr><w:spacing w:after="0" w:line="{field_line_height_twips}" w:lineRule="exact"/></w:pPr>{make_run(text, bold=False, size_half_pt=field_size_half_pt)}</w:p>'''
         else:
+
             # Split at first colon - field name is bold, value is normal.
             # Add two spaces after colon for readability.
 
-            colon_idx = text.index(':')
-            field_name = text[:colon_idx + 1]  # Include the colon
-            field_value = "  " + text[colon_idx + 1:].lstrip()  # Two spaces + value
+            colon_idx   = text.index ( ':' )
+            field_name  = text [ : colon_idx + 1 ]  # Include the colon
+            field_value = "  " + text [ colon_idx + 1 : ].lstrip ()  # Two spaces + value
             return f'''<w:p><w:pPr><w:spacing w:after="0" w:line="{field_line_height_twips}" w:lineRule="exact"/></w:pPr>{make_run(field_name, bold=True, size_half_pt=field_size_half_pt)}{make_run(field_value, bold=False, size_half_pt=field_size_half_pt)}</w:p>'''
 
     # Build content paragraphs (title + blank line + config values).
 
-    lines = [title, ''] + content.split('\n')
-    content_xml = ''.join(make_para(line, is_title=(i == 0)) for i, line in enumerate(lines))
+    lines       = [ title, '' ] + content.split ( '\n' )
+    content_xml = ''.join ( make_para ( line, is_title = ( i == 0 ) ) for i, line in enumerate ( lines ) )
 
     # Standard Word text box XML - same as Insert > Text Box.
     # behindDoc="0" = in front of text.
@@ -1024,8 +1049,8 @@ def _add_config_textbox_to_body(
 
     # Append the text box drawing to the run.
 
-    drawing = parse_xml(textbox_xml)
-    run._r.append(drawing)
+    drawing = parse_xml ( textbox_xml )
+    run._r.append ( drawing )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1048,7 +1073,7 @@ def _add_config_textbox_to_body(
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def add_section_break(document: Document, config: Config) -> None:
+def add_section_break ( document: Document, config: Config ) -> None:
 
     # Add a section break and configure the new section with gutter.
 
@@ -1056,11 +1081,11 @@ def add_section_break(document: Document, config: Config) -> None:
 
     # Add a new section (continuous section break, then we configure it).
 
-    new_section = document.add_section(WD_SECTION.NEW_PAGE)
+    new_section = document.add_section ( WD_SECTION.NEW_PAGE )
 
     # Configure the new section with gutter enabled.
 
-    configure_section(new_section, config)
+    configure_section ( new_section, config )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1083,7 +1108,7 @@ def add_section_break(document: Document, config: Config) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def add_non_numbered_section_break(document: Document, config: Config) -> None:
+def add_non_numbered_section_break ( document: Document, config: Config ) -> None:
 
     # Add a section break without page numbers.
 
@@ -1091,30 +1116,30 @@ def add_non_numbered_section_break(document: Document, config: Config) -> None:
 
     # Add a new section.
 
-    new_section = document.add_section(WD_SECTION.NEW_PAGE)
+    new_section = document.add_section ( WD_SECTION.NEW_PAGE )
 
     # Configure the section with page layout.
 
-    configure_section(new_section, config)
+    configure_section ( new_section, config )
 
     # Unlink footers from the previous section and clear them.
     # This ensures no page numbers appear in this section.
 
-    odd_footer = new_section.footer
+    odd_footer                       = new_section.footer
     odd_footer.is_linked_to_previous = False
 
     # Clear any existing content.
 
     for paragraph in odd_footer.paragraphs:
-        paragraph.clear()
+        paragraph.clear ()
 
-    even_footer = new_section.even_page_footer
+    even_footer                       = new_section.even_page_footer
     even_footer.is_linked_to_previous = False
 
     # Clear any existing content.
 
     for paragraph in even_footer.paragraphs:
-        paragraph.clear()
+        paragraph.clear ()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1141,40 +1166,40 @@ def add_non_numbered_section_break(document: Document, config: Config) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def add_numbered_section_break(document: Document, config: Config, start_number: int = 1) -> None:
+def add_numbered_section_break ( document: Document, config: Config, start_number: int = 1 ) -> None:
 
     # Add a section break with page numbering enabled.
 
     from docx.enum.section import WD_SECTION
-    from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+    from docx.enum.text    import WD_PARAGRAPH_ALIGNMENT
 
     # Add a new section.
 
-    new_section = document.add_section(WD_SECTION.NEW_PAGE)
+    new_section = document.add_section ( WD_SECTION.NEW_PAGE )
 
     # Configure the section with page layout.
 
-    configure_section(new_section, config)
+    configure_section ( new_section, config )
 
     # Enable different odd and even headers/footers.
 
-    _enable_different_odd_even_headers(new_section)
+    _enable_different_odd_even_headers ( new_section )
 
     # Set the starting page number.
 
-    _set_page_number_start(new_section, start_number)
+    _set_page_number_start ( new_section, start_number )
 
     # Configure the odd (recto) footer - page number right-aligned.
 
-    odd_footer = new_section.footer
+    odd_footer                       = new_section.footer
     odd_footer.is_linked_to_previous = False
-    _add_page_number_to_footer(odd_footer, WD_PARAGRAPH_ALIGNMENT.RIGHT, config)
+    _add_page_number_to_footer ( odd_footer, WD_PARAGRAPH_ALIGNMENT.RIGHT, config )
 
     # Configure the even (verso) footer - page number left-aligned.
 
-    even_footer = new_section.even_page_footer
+    even_footer                       = new_section.even_page_footer
     even_footer.is_linked_to_previous = False
-    _add_page_number_to_footer(even_footer, WD_PARAGRAPH_ALIGNMENT.LEFT, config)
+    _add_page_number_to_footer ( even_footer, WD_PARAGRAPH_ALIGNMENT.LEFT, config )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1196,7 +1221,7 @@ def add_numbered_section_break(document: Document, config: Config, start_number:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _enable_different_odd_even_headers(section: Section) -> None:
+def _enable_different_odd_even_headers ( section: Section ) -> None:
 
     # Enable different odd and even headers/footers for a section.
 
@@ -1212,12 +1237,15 @@ def _enable_different_odd_even_headers(section: Section) -> None:
 
     # Check if evenAndOddHeaders already exists.
 
-    evenAndOdd = settings.find(qn('w:evenAndOddHeaders'))
+    evenAndOdd = settings.find ( qn ( 'w:evenAndOddHeaders' ) )
+
     if evenAndOdd is None:
-        evenAndOdd = parse_xml(
+
+        evenAndOdd = parse_xml (
             '<w:evenAndOddHeaders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
         )
-        settings.append(evenAndOdd)
+
+        settings.append ( evenAndOdd )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1237,7 +1265,7 @@ def _enable_different_odd_even_headers(section: Section) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _set_page_number_start(section: Section, start_number: int) -> None:
+def _set_page_number_start ( section: Section, start_number: int ) -> None:
 
     # Set the starting page number for a section.
 
@@ -1245,15 +1273,20 @@ def _set_page_number_start(section: Section, start_number: int) -> None:
 
     # Find or create the pgNumType element.
 
-    pgNumType = sectPr.find(qn('w:pgNumType'))
+    pgNumType = sectPr.find ( qn ( 'w:pgNumType' ) )
+
     if pgNumType is None:
-        pgNumType = parse_xml(
+
+        pgNumType = parse_xml (
             f'<w:pgNumType xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
             f'w:start="{start_number}"/>'
         )
-        sectPr.append(pgNumType)
+
+        sectPr.append ( pgNumType )
+
     else:
-        pgNumType.set(qn('w:start'), str(start_number))
+
+        pgNumType.set ( qn ( 'w:start' ), str ( start_number ) )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1274,7 +1307,7 @@ def _set_page_number_start(section: Section, start_number: int) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _add_page_number_to_footer(footer, alignment, config: Config) -> None:
+def _add_page_number_to_footer ( footer, alignment, config: Config ) -> None:
 
     # Add a page number field to a footer.
 
@@ -1282,44 +1315,44 @@ def _add_page_number_to_footer(footer, alignment, config: Config) -> None:
 
     for paragraph in footer.paragraphs:
         p = paragraph._element
-        p.getparent().remove(p)
+        p.getparent ().remove ( p )
 
     # Add the paragraph with page number.
 
-    paragraph = footer.add_paragraph()
+    paragraph           = footer.add_paragraph ()
     paragraph.alignment = alignment
 
     # Set paragraph format - no spacing.
 
-    paragraph.paragraph_format.space_before = Pt(0)
-    paragraph.paragraph_format.space_after = Pt(0)
+    paragraph.paragraph_format.space_before = Pt ( 0 )
+    paragraph.paragraph_format.space_after  = Pt ( 0 )
 
     # Add the PAGE field for page number.
 
-    run = paragraph.add_run()
+    run           = paragraph.add_run ()
     run.font.name = DEFAULT_FONT_NAME
-    run.font.size = Pt(10)
+    run.font.size = Pt ( 10 )
 
     # Insert the PAGE field using XML.
     # The PAGE field displays the current page number.
 
-    fldChar_begin = parse_xml(
+    fldChar_begin = parse_xml (
         '<w:fldChar xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         'w:fldCharType="begin"/>'
     )
-    run._r.append(fldChar_begin)
+    run._r.append ( fldChar_begin )
 
-    instrText = parse_xml(
+    instrText = parse_xml (
         '<w:instrText xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         'xml:space="preserve"> PAGE </w:instrText>'
     )
-    run._r.append(instrText)
+    run._r.append ( instrText )
 
-    fldChar_end = parse_xml(
+    fldChar_end = parse_xml (
         '<w:fldChar xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         'w:fldCharType="end"/>'
     )
-    run._r.append(fldChar_end)
+    run._r.append ( fldChar_end )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1339,26 +1372,27 @@ def _add_page_number_to_footer(footer, alignment, config: Config) -> None:
 #   The paragraph containing the page break (can be used as anchor for overlays).
 #-----------------------------------------------------------------------------------------------------------------------
 
-def add_page_break(document: Document, minimize_height: bool = False):
+def add_page_break ( document: Document, minimize_height: bool = False ):
 
     # Add a page break to the document.
 
-    from docx.shared import Pt
+    from docx.shared    import Pt
     from docx.enum.text import WD_BREAK, WD_LINE_SPACING
 
-    paragraph = document.add_paragraph()
-    run = paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)  # Page break (not line break)
+    paragraph = document.add_paragraph ()
+    run       = paragraph.add_run ()
+    run.add_break ( WD_BREAK.PAGE )  # Page break (not line break)
 
     if minimize_height:
+
         # Set font size to 1pt and line spacing to exactly 1pt.
         # Also set spacing before/after to 0 to eliminate any extra space.
 
-        run.font.size = Pt(1)
+        run.font.size                                = Pt ( 1 )
         paragraph.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-        paragraph.paragraph_format.line_spacing = Pt(1)
-        paragraph.paragraph_format.space_before = Pt(0)
-        paragraph.paragraph_format.space_after = Pt(0)
+        paragraph.paragraph_format.line_spacing      = Pt ( 1 )
+        paragraph.paragraph_format.space_before      = Pt ( 0 )
+        paragraph.paragraph_format.space_after       = Pt ( 0 )
 
     # Return data to caller.
 
@@ -1385,12 +1419,14 @@ def add_page_break(document: Document, minimize_height: bool = False):
 #   Content width in centimeters.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_content_width(config: Config, include_gutter: bool = True) -> float:
+def get_content_width ( config: Config, include_gutter: bool = True ) -> float:
 
     # Calculate the available content width in centimeters.
 
     width = config.page.width - config.page.margin_left - config.page.margin_right
+
     if include_gutter:
+
         width -= config.page.gutter_size
 
     # Return data to caller.
@@ -1417,15 +1453,15 @@ def get_content_width(config: Config, include_gutter: bool = True) -> float:
 #   Content width in twips (1 cm ≈ 566.93 twips).
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_content_width_twips(config: Config) -> int:
+def get_content_width_twips ( config: Config ) -> int:
 
     # Calculate the available content width in twips (dxa).
 
-    width_cm = get_content_width(config, include_gutter=True)
+    width_cm = get_content_width ( config, include_gutter = True )
 
     # Return data to caller.
 
-    return int(width_cm * TWIPS_PER_CM)
+    return int ( width_cm * TWIPS_PER_CM )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1444,7 +1480,7 @@ def get_content_width_twips(config: Config) -> int:
 #   Content height in centimeters.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_content_height(config: Config) -> float:
+def get_content_height ( config: Config ) -> float:
 
     # Calculate the available content height in centimeters.
 
@@ -1469,7 +1505,7 @@ def get_content_height(config: Config) -> float:
 #   Content height in twips (1 cm ≈ 566.93 twips).
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_content_height_twips(config: Config) -> float:
+def get_content_height_twips ( config: Config ) -> float:
 
     # Calculate the available content height in twips.
 
@@ -1478,7 +1514,6 @@ def get_content_height_twips(config: Config) -> float:
     # Return data to caller.
 
     return height_cm * TWIPS_PER_CM
-
 
 # Global constants.
 
@@ -1513,13 +1548,13 @@ SAFETY_MARGIN_TWIPS = 40  # 2pt buffer
 #   Title row height in twips.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_title_row_height_twips(config: Config) -> int:
+def get_title_row_height_twips ( config: Config ) -> int:
 
     # Get title row height in twips from config.
 
     # Return data to caller.
 
-    return int(config.table.title_row.height * TWIPS_PER_PT)
+    return int ( config.table.title_row.height * TWIPS_PER_PT )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1538,13 +1573,13 @@ def get_title_row_height_twips(config: Config) -> int:
 #   Header row height in twips.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_header_row_height_twips(config: Config) -> int:
+def get_header_row_height_twips ( config: Config ) -> int:
 
     # Get header row height in twips from config.
 
     # Return data to caller.
 
-    return int(config.table.header_row.height * TWIPS_PER_PT)
+    return int ( config.table.header_row.height * TWIPS_PER_PT )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1563,11 +1598,11 @@ def get_header_row_height_twips(config: Config) -> int:
 #   Hex color string (e.g., "000000" for black, "FFFFFF" for white).
 #-----------------------------------------------------------------------------------------------------------------------
 
-def grayscale_to_hex(grayscale: int) -> str:
+def grayscale_to_hex ( grayscale: int ) -> str:
 
     # Convert grayscale percentage to hex color string.
 
-    gray_value = int(255 * (1 - grayscale / 100))
+    gray_value = int ( 255 * ( 1 - grayscale / 100 ) )
 
     # Return data to caller.
 
@@ -1590,15 +1625,15 @@ def grayscale_to_hex(grayscale: int) -> str:
 #   RGB tuple (r, g, b) where each value is 0-255.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def grayscale_to_rgb(grayscale: int) -> tuple[int, int, int]:
+def grayscale_to_rgb ( grayscale: int ) -> tuple [ int, int, int ]:
 
     # Convert grayscale percentage to RGB tuple.
 
-    gray_value = int(255 * (1 - grayscale / 100))
+    gray_value = int ( 255 * ( 1 - grayscale / 100 ) )
 
     # Return data to caller.
 
-    return (gray_value, gray_value, gray_value)
+    return ( gray_value, gray_value, gray_value )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1626,7 +1661,7 @@ def grayscale_to_rgb(grayscale: int) -> tuple[int, int, int]:
 #   Computed content row height in twips (r_c).
 #-----------------------------------------------------------------------------------------------------------------------
 
-def compute_table_row_height(
+def compute_table_row_height (
     config: Config,
     num_content_rows: int,
     title_row_height_twips: int,
@@ -1636,7 +1671,7 @@ def compute_table_row_height(
 
     # Compute the content row height so the table fills the page with a safety margin.
 
-    p_v = get_content_height_twips(config)
+    p_v = get_content_height_twips ( config )
 
     # Account for the preceding paragraph and safety margin.
 
@@ -1646,11 +1681,11 @@ def compute_table_row_height(
     # Compute the content row height.
 
     available_for_content = p_v - title_row_height_twips - header_row_height_twips
-    row_height = available_for_content / num_content_rows
+    row_height            = available_for_content / num_content_rows
 
     # Return as integer (twips must be whole numbers).
 
-    return int(row_height)
+    return int ( row_height )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1681,7 +1716,7 @@ def compute_table_row_height(
 #   error.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def validate_table_height(
+def validate_table_height (
     config: Config,
     section_name: str,
     num_content_rows: int,
@@ -1692,29 +1727,29 @@ def validate_table_height(
 
     # Validate and compute table row height, warning if content doesn't fit.
 
-    available = get_content_height_twips(config)
+    available = get_content_height_twips ( config )
     fixed_overhead = (
         preceding_paragraph_height_twips +
         SAFETY_MARGIN_TWIPS +
         title_row_height_twips +
         header_row_height_twips
     )
-    remaining = available - fixed_overhead
-    row_height = int(remaining / num_content_rows)
+    remaining  = available - fixed_overhead
+    row_height = int ( remaining / num_content_rows )
 
     # Warn if the computed row height is invalid (table won't fit on the page).
 
     if row_height <= 0:
-        print(f"\n(!) WARNING: {section_name} table height validation failed!")
-        print(f"    Available space: {available:.0f} twips ({available / TWIPS_PER_CM:.2f} cm)")
-        print(f"    Fixed overhead: {fixed_overhead:.0f} twips ({fixed_overhead / TWIPS_PER_CM:.2f} cm)")
-        print(f"      - Preceding paragraph: {preceding_paragraph_height_twips} twips")
-        print(f"      - Safety margin: {SAFETY_MARGIN_TWIPS} twips")
-        print(f"      - Title row: {title_row_height_twips} twips")
-        print(f"      - Header row: {header_row_height_twips} twips")
-        print(f"    Remaining for {num_content_rows} content rows: {remaining:.0f} twips")
-        print(f"    Computed row height: {row_height} twips (INVALID - must be > 0)")
-        print(f"    Suggestion: Reduce margins, row counts, or row heights.\n")
+        print ( f"\n(!) WARNING: {section_name} table height validation failed!" )
+        print ( f"    Available space: {available:.0f} twips ({available / TWIPS_PER_CM:.2f} cm)" )
+        print ( f"    Fixed overhead: {fixed_overhead:.0f} twips ({fixed_overhead / TWIPS_PER_CM:.2f} cm)" )
+        print ( f"      - Preceding paragraph: {preceding_paragraph_height_twips} twips" )
+        print ( f"      - Safety margin: {SAFETY_MARGIN_TWIPS} twips" )
+        print ( f"      - Title row: {title_row_height_twips} twips" )
+        print ( f"      - Header row: {header_row_height_twips} twips" )
+        print ( f"    Remaining for {num_content_rows} content rows: {remaining:.0f} twips" )
+        print ( f"    Computed row height: {row_height} twips (INVALID - must be > 0)" )
+        print ( f"    Suggestion: Reduce margins, row counts, or row heights.\n" )
 
     # Return data to caller.
 

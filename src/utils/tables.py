@@ -10,11 +10,11 @@
 #   Word tables, including border application, cell alignment, and cell background shading.
 #-----------------------------------------------------------------------------------------------------------------------
 
-from docx import Document
-from docx.table import Table, _Cell
-from docx.shared import Cm, Pt, RGBColor
-from docx.oxml.ns import nsdecls
-from docx.oxml import parse_xml
+from docx            import Document
+from docx.table      import Table, _Cell
+from docx.shared     import Cm, Pt, RGBColor
+from docx.oxml.ns    import nsdecls
+from docx.oxml       import parse_xml
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
 from src.config import TableConfig
@@ -39,20 +39,20 @@ from src.config import TableConfig
 #   The created table.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def create_table(document: Document, rows: int, cols: int,
-                 width: float) -> Table:
+def create_table ( document: Document, rows: int, cols: int,
+                   width: float ) -> Table:
 
     # Create a table with specified dimensions.
 
-    table = document.add_table(rows=rows, cols=cols)
+    table           = document.add_table ( rows = rows, cols = cols )
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table.autofit = False
+    table.autofit   = False
 
     # Set table width.
 
     for row in table.rows:
         for cell in row.cells:
-            cell.width = Cm(width / cols)
+            cell.width = Cm ( width / cols )
 
     # Return data to caller.
 
@@ -76,25 +76,25 @@ def create_table(document: Document, rows: int, cols: int,
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def set_table_borders(table: Table, config: TableConfig) -> None:
+def set_table_borders ( table: Table, config: TableConfig ) -> None:
 
     # Apply border styling to a table.
 
     # Calculate grayscale color value (0=white, 100=black).
 
-    gray_value = int(255 * (1 - config.border.grayscale / 100))
-    color_hex = f"{gray_value:02X}{gray_value:02X}{gray_value:02X}"
+    gray_value = int ( 255 * ( 1 - config.border.grayscale / 100 ) )
+    color_hex  = f"{gray_value:02X}{gray_value:02X}{gray_value:02X}"
 
     # Border size in eighths of a point.
 
-    border_size = int(config.border.thickness * 8)
+    border_size = int ( config.border.thickness * 8 )
 
     tbl = table._tbl
-    tbl_pr = tbl.tblPr if tbl.tblPr is not None else parse_xml(
+    tbl_pr = tbl.tblPr if tbl.tblPr is not None else parse_xml (
         r'<w:tblPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
     )
 
-    tbl_borders = parse_xml(
+    tbl_borders = parse_xml (
         f'''<w:tblBorders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
             <w:top w:val="single" w:sz="{border_size}" w:color="{color_hex}"/>
             <w:left w:val="single" w:sz="{border_size}" w:color="{color_hex}"/>
@@ -105,9 +105,9 @@ def set_table_borders(table: Table, config: TableConfig) -> None:
         </w:tblBorders>'''
     )
 
-    tbl_pr.append(tbl_borders)
+    tbl_pr.append ( tbl_borders )
     if tbl.tblPr is None:
-        tbl.insert(0, tbl_pr)
+        tbl.insert ( 0, tbl_pr )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -126,16 +126,16 @@ def set_table_borders(table: Table, config: TableConfig) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def remove_table_borders(table: Table) -> None:
+def remove_table_borders ( table: Table ) -> None:
 
     # Remove all borders from a table.
 
     tbl = table._tbl
-    tbl_pr = tbl.tblPr if tbl.tblPr is not None else parse_xml(
+    tbl_pr = tbl.tblPr if tbl.tblPr is not None else parse_xml (
         r'<w:tblPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
     )
 
-    tbl_borders = parse_xml(
+    tbl_borders = parse_xml (
         '''<w:tblBorders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
             <w:top w:val="nil"/>
             <w:left w:val="nil"/>
@@ -146,9 +146,9 @@ def remove_table_borders(table: Table) -> None:
         </w:tblBorders>'''
     )
 
-    tbl_pr.append(tbl_borders)
+    tbl_pr.append ( tbl_borders )
     if tbl.tblPr is None:
-        tbl.insert(0, tbl_pr)
+        tbl.insert ( 0, tbl_pr )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -168,17 +168,17 @@ def remove_table_borders(table: Table) -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def set_cell_vertical_alignment(cell: _Cell, alignment: str = "center") -> None:
+def set_cell_vertical_alignment ( cell: _Cell, alignment: str = "center" ) -> None:
 
     # Set the vertical alignment of a table cell.
 
-    tc = cell._tc
-    tc_pr = tc.get_or_add_tcPr()
-    val_map = {"top": "top", "center": "center", "bottom": "bottom"}
-    v_align = parse_xml(
+    tc      = cell._tc
+    tc_pr   = tc.get_or_add_tcPr ()
+    val_map = { "top": "top", "center": "center", "bottom": "bottom" }
+    v_align = parse_xml (
         f'<w:vAlign xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:val="{val_map.get(alignment, "center")}"/>'
     )
-    tc_pr.append(v_align)
+    tc_pr.append ( v_align )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -198,19 +198,19 @@ def set_cell_vertical_alignment(cell: _Cell, alignment: str = "center") -> None:
 #   None.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def set_cell_shading(cell: _Cell, grayscale: int) -> None:
+def set_cell_shading ( cell: _Cell, grayscale: int ) -> None:
 
     # Set the background shading of a table cell using a grayscale percentage value.
 
     # Convert grayscale percentage to hex color.
 
-    gray_value = int(255 * (1 - grayscale / 100))
-    color_hex = f"{gray_value:02X}{gray_value:02X}{gray_value:02X}"
+    gray_value = int ( 255 * ( 1 - grayscale / 100 ) )
+    color_hex  = f"{gray_value:02X}{gray_value:02X}{gray_value:02X}"
 
-    tc = cell._tc
-    tc_pr = tc.get_or_add_tcPr()
-    shd = parse_xml(
+    tc    = cell._tc
+    tc_pr = tc.get_or_add_tcPr ()
+    shd = parse_xml (
         f'<w:shd xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
         f'w:val="clear" w:color="auto" w:fill="{color_hex}"/>'
     )
-    tc_pr.append(shd)
+    tc_pr.append ( shd )

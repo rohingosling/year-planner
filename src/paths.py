@@ -15,8 +15,8 @@
 import os
 import sys
 import tempfile
-from pathlib import Path
 
+from pathlib import Path
 
 # Global constants.
 
@@ -41,18 +41,18 @@ CACHE_SUBDIR = "YearPlanner"   # Top-level folder name for the writable runtime 
 #   Absolute Path to the requested resource.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def resource_path(*parts: str) -> Path:
+def resource_path ( *parts: str ) -> Path:
 
     # Resolve a bundled resource against the frozen bundle dir or the source project root.
 
-    if getattr(sys, "frozen", False):
-        base = Path(sys._MEIPASS)
+    if getattr ( sys, "frozen", False ):
+        base = Path ( sys._MEIPASS )
     else:
-        base = Path(__file__).resolve().parent.parent
+        base = Path ( __file__ ).resolve ().parent.parent
 
     # Return data to caller.
 
-    return base.joinpath(*parts)
+    return base.joinpath ( *parts )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -73,17 +73,17 @@ def resource_path(*parts: str) -> Path:
 #   Absolute Path to the cache directory (guaranteed to exist).
 #-----------------------------------------------------------------------------------------------------------------------
 
-def cache_dir() -> Path:
+def cache_dir () -> Path:
 
     # Choose a writable base directory, then ensure the cache folder exists.
 
     if sys.platform == "win32":
-        base = Path(os.environ.get("LOCALAPPDATA", tempfile.gettempdir()))
+        base = Path ( os.environ.get ( "LOCALAPPDATA", tempfile.gettempdir () ) )
     else:
-        base = Path(tempfile.gettempdir())
+        base = Path ( tempfile.gettempdir () )
 
     path = base / CACHE_SUBDIR / "cache"
-    path.mkdir(parents=True, exist_ok=True)
+    path.mkdir ( parents = True, exist_ok = True )
 
     # Return data to caller.
 
@@ -114,46 +114,57 @@ def cache_dir() -> Path:
 #   Tuple of (docx_path, pdf_path) as absolute Paths sharing a common stem.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def resolve_output_paths(filename: str | None, year: int) -> tuple[Path, Path]:
+def resolve_output_paths ( filename: str | None, year: int ) -> tuple [ Path, Path ]:
 
     # Resolve a shared output stem and directory, then derive the per-format paths.
 
     default_stem = f"year-planner-{year}"
 
     if filename is None:
-        target_dir = Path.cwd()
+
+        target_dir = Path.cwd ()
         stem       = default_stem
+
     else:
-        candidate = Path(filename)
+
+        candidate = Path ( filename )
 
         # Resolve relative paths against the current working directory.
 
-        if not candidate.is_absolute():
-            candidate = Path.cwd() / candidate
+        if not candidate.is_absolute ():
 
-        if candidate.is_dir():
+            candidate = Path.cwd () / candidate
+
+        if candidate.is_dir ():
 
             # An existing directory: place the default stem inside it.
 
             target_dir = candidate
             stem       = default_stem
+
         else:
+
             target_dir = candidate.parent
             name       = candidate.name
-            lowered    = name.lower()
+            lowered    = name.lower ()
 
             # Strip a trailing .docx/.pdf if present; otherwise keep the name verbatim (interior dots included).
 
-            if lowered.endswith(".docx"):
-                stem = name[:-len(".docx")]
-            elif lowered.endswith(".pdf"):
-                stem = name[:-len(".pdf")]
+            if lowered.endswith ( ".docx" ):
+
+                stem = name [ : -len ( ".docx" ) ]
+
+            elif lowered.endswith ( ".pdf" ):
+
+                stem = name [ : -len ( ".pdf" ) ]
+
             else:
+
                 stem = name
 
     # Ensure the destination directory exists, then build the per-format paths.
 
-    target_dir.mkdir(parents=True, exist_ok=True)
+    target_dir.mkdir ( parents = True, exist_ok = True )
 
     docx_path = target_dir / f"{stem}.docx"
     pdf_path  = target_dir / f"{stem}.pdf"
@@ -181,15 +192,17 @@ def resolve_output_paths(filename: str | None, year: int) -> tuple[Path, Path]:
 #   True if Word appears to be installed and usable, False otherwise.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def word_available() -> bool:
+def word_available () -> bool:
 
     # Detect Microsoft Word per platform.
 
     if sys.platform == "win32":
-        return _word_available_windows()
+
+        return _word_available_windows ()
 
     if sys.platform == "darwin":
-        return _word_available_macos()
+
+        return _word_available_macos ()
 
     # Return data to caller. Other platforms (e.g. Linux) cannot run Microsoft Word.
 
@@ -215,28 +228,36 @@ def word_available() -> bool:
 #   True if Word appears to be installed and usable, False otherwise.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _word_available_windows() -> bool:
+def _word_available_windows () -> bool:
 
     # Registry probe: a registered Word.Application\CLSID indicates the COM server is present.
 
     try:
+
         import winreg
 
-        with winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"Word.Application\CLSID"):
+        with winreg.OpenKey ( winreg.HKEY_CLASSES_ROOT, r"Word.Application\CLSID" ):
+
             return True
-    except (OSError, ImportError):
+
+    except ( OSError, ImportError ):
+
         pass
 
     # COM fallback: attempt to instantiate Word and immediately quit.
 
     try:
+
         import importlib
 
-        win32com_client = importlib.import_module("win32com.client")
-        word = win32com_client.Dispatch("Word.Application")
-        word.Quit()
+        win32com_client = importlib.import_module ( "win32com.client" )
+        word            = win32com_client.Dispatch ( "Word.Application" )
+        word.Quit ()
+
         return True
+
     except Exception:
+
         return False
 
 
@@ -259,27 +280,31 @@ def _word_available_windows() -> bool:
 #   True if Word appears to be installed, False otherwise.
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _word_available_macos() -> bool:
+def _word_available_macos () -> bool:
 
     # Standard application locations (no subprocess required).
 
     candidates = [
-        Path("/Applications/Microsoft Word.app"),
-        Path.home() / "Applications" / "Microsoft Word.app",
+        Path ( "/Applications/Microsoft Word.app" ),
+        Path.home () / "Applications" / "Microsoft Word.app",
     ]
 
-    if any(candidate.is_dir() for candidate in candidates):
+    if any ( candidate.is_dir () for candidate in candidates ):
         return True
 
     # Fall back to Launch Services for Word installed in a non-standard location.
 
     try:
+
         import subprocess
 
-        result = subprocess.run(
-            ["osascript", "-e", 'id of application "Microsoft Word"'],
-            capture_output=True, text=True, timeout=10
+        result = subprocess.run (
+            [ "osascript", "-e", 'id of application "Microsoft Word"' ],
+            capture_output = True, text = True, timeout = 10
         )
+
         return result.returncode == 0
+
     except Exception:
+
         return False
