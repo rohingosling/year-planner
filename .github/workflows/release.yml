@@ -111,8 +111,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Install only the runtime deps + PyInstaller (the build's needs). venv_requirements.txt
+          # is the dev/Windows environment (it pins pywin32 for the Word->PDF path) and is not
+          # Linux-installable, so the CI build deliberately does not use it.
           python -m pip install --upgrade pip
-          pip install -r requirements.txt -r venv_requirements.txt
+          pip install -r requirements.txt pyinstaller
 
       - name: Stamp version and build date into the banner
         shell: bash
