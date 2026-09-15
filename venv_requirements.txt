@@ -1,0 +1,21 @@
+# Development / build dependencies for the Year Planner Generator.
+#
+# This is a superset of the runtime requirements: it pulls in everything an end
+# user needs (via -r requirements.txt) plus the tooling required to build the
+# standalone Windows executable and run the maintainer-only utility scripts.
+#
+# Install with:
+#
+#   .venv/Scripts/python.exe -m pip install -r venv_requirements.txt
+
+-r requirements.txt
+
+# Packaging — builds dist/year-planner.exe (scripts/build.py, year-planner.spec).
+pyinstaller>=6.0.0
+
+# Windows COM bridge — used by paths.word_available() to detect MS Word for --pdf.
+pywin32>=306
+
+# PDF -> PNG helper for scripts/pdf_to_png.py only. AGPL; dev-only, never shipped
+# in the runtime set or bundled into the exe.
+PyMuPDF>=1.24.0
